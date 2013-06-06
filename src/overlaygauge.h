@@ -85,7 +85,9 @@ public:
     virtual void handleNonDragClickRelease(int x_rel, int y_rel);
     virtual void handleKeyPress(char key, XPLMKeyFlags flags, char virtual_key) = 0;
     virtual int  frameTextureId() const;
+    virtual int  frameTextureLitId() const;
     virtual void drawFrameTexture(int, int, int, int);
+    virtual void drawFrameTextureLit(int, int, int, int);
     virtual bool wantClearTexture();
     virtual bool frameIsBackground();
     virtual int handleMouseWheel(int x, int y, int wheel, int clicks);
@@ -146,6 +148,7 @@ private:
     DataRef<int> screen_width_;
     DataRef<int> screen_height_;
     DataRef<int> view_type_;
+    DataRef<int> panel_render_phase_;
     DataRef<float> click_3d_x_;
     DataRef<float> click_3d_y_;
     DataRef<std::vector<float> > instrument_brightness_;
@@ -160,6 +163,7 @@ private:
     int copy_left_3d_;
     int copy_top_3d_;
     int xplane_version_;
+    DataRef<float> lit_level_r_, lit_level_g_, lit_level_b_;
 };
 
 }

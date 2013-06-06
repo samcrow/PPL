@@ -57,6 +57,7 @@ OverlayGauge::OverlayGauge(int left2d, int top2d, int width2d, int height2d, int
     screen_width_("sim/graphics/view/window_width"),
     screen_height_("sim/graphics/view/window_height"),
     view_type_("sim/graphics/view/view_type"),
+    panel_render_phase_("sim/graphics/view/panel_render_type"),
     click_3d_x_("sim/graphics/view/click_3d_x_pixels"),
     click_3d_y_("sim/graphics/view/click_3d_y_pixels"),
     instrument_brightness_("sim/cockpit2/switches/instrument_brightness_ratio"),
@@ -66,14 +67,17 @@ OverlayGauge::OverlayGauge(int left2d, int top2d, int width2d, int height2d, int
     window_is_dragging_(false),
     window_has_keyboard_focus_(false),
     copy_left_3d_(-1),
-    copy_top_3d_(-1)
+    copy_top_3d_(-1),
+    lit_level_r_("sim/graphics/misc/cockpit_light_level_r"),
+    lit_level_g_("sim/graphics/misc/cockpit_light_level_g"),
+    lit_level_b_("sim/graphics/misc/cockpit_light_level_b")
 {
     // sim/graphics/view/panel_render_type
     // debug/texture_browser
     // panel texture
     // 0 - 0 = Attr_cockpit
     // atr_cockpit_Region albedo
-    //  attr_cockpit_Region emissive
+    // attr_cockpit_Region emissive
     int xplm_version;
     XPLMHostApplicationID host_app;
     XPLMGetVersions(&xplane_version_, &xplm_version, &host_app);
@@ -223,48 +227,30 @@ void OverlayGauge::frame()
 
 void OverlayGauge::drawTexture(int tex_id, int left, int top, int right, int bottom, float alpha, int blend)
 {
-    setDrawState(0/*Fog*/, 1/*TexUnits*/, 0/*Lighting*/, 0/*AlphaTesting*/, blend/*AlphaBlending*/, 0/*DepthTesting*/, 0/*DepthWriting*/);
     bindTex(tex_id, 0);
-    GLfloat vertices[] = { left, top,
-                           right, top,
-                           right, bottom,
-                           left, bottom };
-    GLfloat colors[] = { 1,1,1,alpha,
-                         1,1,1,alpha,
-                         1,1,1,alpha,
-                         1,1,1,alpha };
-    GLfloat tex_coords[] = { 0, 1,
-                             1, 1,
-                             1, 0,
-                             0, 0 };
-
-    if (xplane_version_ < 10000)
-        glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, vertices);
-    glTexCoordPointer(2, GL_FLOAT, 0, tex_coords);
-    glColorPointer(4, GL_FLOAT, 0, colors);
-
-    glDrawArrays(GL_QUADS, 0, 4);
-    if (xplane_version_ < 10000)
-        glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0,1);glVertex2f(left, top);
+    glTexCoord2f(1,1); glVertex2f(right, top);
+    glTexCoord2f(1,0); glVertex2f(right, bottom);
+    glTexCoord2f(0,0); glVertex2f(left, bottom);
+    glEnd();
 }
 
 int OverlayGauge::draw3dCallback(XPLMDrawingPhase, int)
 {
-    if (view_type_ == 1026 || always_draw_3d_)
+    if (panel_render_phase_ == 0 || panel_render_phase_ == 2)
     {
-        region_draw_counter_++;
-        if (visible_3d_ && (panel_region_id_3d_ == -1 || region_draw_counter_ == static_cast<unsigned int>(panel_region_id_3d_)))
+        if (view_type_ == 1026 || always_draw_3d_)
         {
-            drawTexture(gauge_texture_, left_3d_, top_3d_, left_3d_+width_view_3d_ * scale_3d_, top_3d_-height_view_3d_*scale_3d_, alpha_);
-
-            if (copy_top_3d_ > -1 && copy_left_3d_ > -1)
+            region_draw_counter_++;
+            if (visible_3d_ && (panel_region_id_3d_ == -1 || region_draw_counter_ == static_cast<unsigned int>(panel_region_id_3d_)))
             {
-                drawTexture(gauge_texture_, copy_left_3d_, copy_top_3d_, left_3d_+width_view_3d_ * scale_3d_, top_3d_-height_view_3d_*scale_3d_, alpha_);
+                drawTexture(gauge_texture_, left_3d_, top_3d_, left_3d_+width_view_3d_ * scale_3d_, top_3d_-height_view_3d_*scale_3d_, alpha_);
+
+                if (copy_top_3d_ > -1 && copy_left_3d_ > -1)
+                {
+                    drawTexture(gauge_texture_, copy_left_3d_, copy_top_3d_, left_3d_+width_view_3d_ * scale_3d_, top_3d_-height_view_3d_*scale_3d_, alpha_);
+                }
             }
         }
     }
@@ -321,14 +307,36 @@ void OverlayGauge::draw2dWindowCallback(XPLMWindowID)
 
     if (visible_2d_)
     {
+        setDrawState(0/*Fog*/, 1/*TexUnits*/, 0/*Lighting*/, 0/*AlphaTesting*/, 1/*AlphaBlending*/, 0/*DepthTesting*/, 0/*DepthWriting*/);
+
         int left, top, right, bottom;
         XPLMGetWindowGeometry(window2d_id_, &left, &top, &right, &bottom);
 
-        if (frameIsBackground())
-            drawFrameTexture(left, top, right, bottom);
-        drawTexture(gauge_texture_, left+frame_off_x_, top-frame_off_y_, left+frame_off_x_+width_view_3d_, top -frame_off_y_-height_view_3d_, alpha_, (frameIsBackground() || wantClearTexture()));
-        if (!frameIsBackground())
-            drawFrameTexture(left, top, right, bottom);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glColor4f(0,0,0,1);
+        drawFrameTexture(left, top, right, bottom);
+        glColor4f(1,1,1,1);
+        drawTexture(gauge_texture_, left+frame_off_x_, top-frame_off_y_, left+frame_off_x_+width_view_3d_, top -frame_off_y_-height_view_3d_, 1, 1);
+        glColor4f(1,1,1,instrumentBrightness());
+        drawFrameTextureLit(left, top, right, bottom);
+        setDrawState(0/*Fog*/, 0/*TexUnits*/, 0/*Lighting*/, 0/*AlphaTesting*/, 1/*AlphaBlending*/, 0/*DepthTesting*/, 0/*DepthWriting*/);
+        glColor4f(0,0,0,1-instrumentBrightness());
+        glBegin(GL_QUADS);
+        glVertex2f(left+frame_off_x_, top-frame_off_y_);
+        glVertex2f(left+frame_off_x_+width_view_3d_, top -frame_off_y_);
+        glVertex2f(left+frame_off_x_+width_view_3d_, top -frame_off_y_-height_view_3d_);
+        glVertex2f(left+frame_off_x_, top -frame_off_y_-height_view_3d_);
+        glEnd();
+        setDrawState(0/*Fog*/, 1/*TexUnits*/, 0/*Lighting*/, 0/*AlphaTesting*/, 1/*AlphaBlending*/, 0/*DepthTesting*/, 0/*DepthWriting*/);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        glColor4f(lit_level_r_,lit_level_g_,lit_level_b_,1);
+        drawFrameTexture(left, top, right, bottom);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        if (frameIsBackground())
+//            drawFrameTexture(left, top, right, bottom);
+//        drawTexture(gauge_texture_, left+frame_off_x_, top-frame_off_y_, left+frame_off_x_+width_view_3d_, top -frame_off_y_-height_view_3d_, alpha_, (frameIsBackground() || wantClearTexture()));
+//        if (!frameIsBackground())
+//            drawFrameTexture(left, top, right, bottom);
 
         if (window_has_keyboard_focus_)
         {
@@ -495,9 +503,24 @@ int OverlayGauge::frameTextureId() const
     return 0;
 }
 
+int OverlayGauge::frameTextureLitId() const
+{
+    return 0;
+}
+
 void OverlayGauge::drawFrameTexture(int left, int top, int right, int bottom)
 {
     int tex_id = frameTextureId();
+    if (tex_id > 0)
+    {
+        drawTexture(tex_id, left, top, right, bottom);
+    }
+}
+
+
+void OverlayGauge::drawFrameTextureLit(int left, int top, int right, int bottom)
+{
+    int tex_id = frameTextureLitId();
     if (tex_id > 0)
     {
         drawTexture(tex_id, left, top, right, bottom);
