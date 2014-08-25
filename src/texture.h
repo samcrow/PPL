@@ -30,8 +30,9 @@
 
 #include <string>
 #include <vector>
+#include <stdint.h>
 #include "namespaces.h"
-#include "stdint.h"
+#include "imageio/imagedata.h"
 
 namespace PPLNAMESPACE {
 
@@ -39,49 +40,13 @@ class Texture
 {
 public:
 
-#pragma pack(push, ident, 2)
-
-    struct BMPFILEHEADER
-    {
-        int16_t   bfType;
-        int32_t   bfSize;
-        int16_t   bfReserved1;
-        int16_t   bfReserved2;
-        int32_t    bfOffBits;
-    };
-
-    struct BMPINFOHEADER
-    {
-        int32_t    biSize;
-        int32_t    biWidth;
-        int32_t    biHeight;
-        int16_t   biPlanes;
-        int16_t   biBitCount;
-        int32_t    biCompression;
-        int32_t    biSizeImage;
-        int32_t    biXPelsPerMeter;
-        int32_t    biYPelsPerMeter;
-        int32_t    biClrUsed;
-        int32_t    biClrImportant;
-    };
-
-    struct IMAGEDATA
-    {
-        std::vector<unsigned char> pData;
-        int32_t    Width;
-        int32_t    Height;
-        int32_t    Padding;
-        int16_t   Channels;
-        unsigned int bpp;
-    };
-
-#pragma pack(pop, ident)
-
     Texture(const std::string& file_name);
     ~Texture();
     int id() const;
     int width() const;
     int height() const;
+    void drawTex(float left, float top, float right, float bottom, float alpha);
+    void drawColoredTex(float left, float top, float right, float bottom, float color[]); //color[4], including alpha
 
 private:
 
