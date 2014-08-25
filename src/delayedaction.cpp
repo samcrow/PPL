@@ -31,6 +31,7 @@
 namespace PPLNAMESPACE {
 
 
+
 void DelayedAction::schedule(float timeSeconds, delayed_function fn) {
     
     // Allocate the action on the heap
@@ -45,6 +46,10 @@ void DelayedAction::schedule(float timeSeconds, delayed_function fn) {
     // The object will be deleted after it times out
 }
 
+DelayedAction::DelayedAction() {
+    
+}
+
 DelayedAction::DelayedAction(delayed_function fn) :
     fn(fn)
 
@@ -57,6 +62,10 @@ void DelayedAction::cancel() {
         XPLMDestroyFlightLoop(loopId);
         loopId = 0;
     }
+}
+
+void DelayedAction::setFunction(delayed_function newFunction) {
+    fn = newFunction;
 }
 
 void DelayedAction::schedule(float timeSeconds) {

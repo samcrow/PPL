@@ -63,7 +63,7 @@ public:
      * @brief Sets the function to be called when the time has expired
      * @param fn
      */
-    void setFunction(delayed_function fn);
+    void setFunction(delayed_function newFunction);
     
     /**
      * @brief Schedules the function associated with this instance
