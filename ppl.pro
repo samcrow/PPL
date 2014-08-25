@@ -3,11 +3,13 @@ TEMPLATE = lib
 # Static library without any Qt functionality
 QT -= gui core
 
-CONFIG += static exceptions stl console
+CONFIG += static exceptions stl console c++11
 CONFIG -= thread qt rtti warn_on
 
 VERSION = 1.0.0
 
+INCLUDEPATH += include
+INCLUDEPATH += include/freetype2
 INCLUDEPATH += include/simpleini
 INCLUDEPATH += ../SDK/CHeaders/XPLM
 INCLUDEPATH += ../SDK/CHeaders/Widgets
@@ -81,7 +83,30 @@ HEADERS += \
     src/smoothed.h \
     src/processor.h \
     src/namespaces.h \
-    src/vertexbuffer.hpp
+    src/vertexbuffer.hpp \
+    src/command.h \
+    src/externalcommand.h \
+    src/signalcommand.h \
+    src/imageio/bitmapio.h \
+    src/imageio/imagedata.h \
+    src/imageio/pngio.h \
+    src/imageio/targaio.h \
+    src/mvc/controller.h \
+    src/mvc/view.h \
+    src/mvc/view/clickregion/clickregion.h \
+    src/mvc/view/advancedoverlaygauge.h \
+    src/mvc/view/basicgraphicscontext.h \
+    src/mvc/view/drawable.h \
+    src/mvc/view/fontcache.h \
+    src/mvc/view/glgraphicscontext.h \
+    src/mvc/view/graphicscontext.h \
+    src/mvc/view/overlaygaugeview.h \
+    src/mvc/view/viewcomponent.h \
+    src/plugin_namespace/pathcomponent.h \
+    src/plugin_namespace/pluginnamespace.h \
+    src/util/hash_specialization.h \
+    src/util/varadiccompiler.h \
+    src/delayedaction.h
 
 SOURCES += \
     src/pluginpath.cpp \
@@ -98,7 +123,22 @@ SOURCES += \
     src/menuitem.cpp \
     src/smoothed.cpp \
     src/processor.cpp \
-    src/vertexbuffer.cpp
+    src/vertexbuffer.cpp \
+    src/command.cpp \
+    src/signalcommand.cpp \
+    src/imageio/bitmapio.cpp \
+    src/imageio/pngio.cpp \
+    src/imageio/targaio.cpp \
+    src/mvc/view/clickregion/clickregion.cpp \
+    src/mvc/view/advancedoverlaygauge.cpp \
+    src/mvc/view/basicgraphicscontext.cpp \
+    src/mvc/view/fontcache.cpp \
+    src/mvc/view/glgraphicscontext.cpp \
+    src/mvc/view/overlaygaugeview.cpp \
+    src/plugin_namespace/pathcomponent.cpp \
+    src/plugin_namespace/pluginnamespace.cpp \
+    src/delayedaction.cpp \
+    src/externalcommand.cpp
 
 withsound {
     HEADERS += \
@@ -141,3 +181,15 @@ withserialization {
     SOURCES += src/sharedobject.cpp
 
 }
+
+# Boost Signals2
+win32 {
+    # TODO
+}
+unix:!macx {
+    # TODO
+}
+macx {
+    INCLUDEPATH += /opt/local/include
+}
+
