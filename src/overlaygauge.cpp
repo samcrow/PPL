@@ -225,14 +225,14 @@ void OverlayGauge::drawTexture(int tex_id, int left, int top, int right, int bot
 {
     setDrawState(0/*Fog*/, 1/*TexUnits*/, 0/*Lighting*/, 0/*AlphaTesting*/, blend/*AlphaBlending*/, 0/*DepthTesting*/, 0/*DepthWriting*/);
     bindTex(tex_id, 0);
-    GLfloat vertices[] = { left, top,
-                           right, top,
-                           right, bottom,
-                           left, bottom };
-    GLfloat colors[] = { 1,1,1,alpha,
-                         1,1,1,alpha,
-                         1,1,1,alpha,
-                         1,1,1,alpha };
+    GLfloat vertices[] = { (GLfloat) left, (GLfloat) top,
+                           (GLfloat) right, (GLfloat) top,
+                           (GLfloat) right, (GLfloat) bottom,
+                           (GLfloat) left, (GLfloat) bottom };
+    GLfloat colors[] = { 1,1,1,(GLfloat) alpha,
+                         1,1,1,(GLfloat) alpha,
+                         1,1,1,(GLfloat) alpha,
+                         1,1,1,(GLfloat) alpha };
     GLfloat tex_coords[] = { 0, 1,
                              1, 1,
                              1, 0,
