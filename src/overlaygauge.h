@@ -73,8 +73,8 @@ public:
     int handle2dClickCallback(XPLMWindowID window_id, int x, int y, XPLMMouseStatus mouse);
     int handle3dClickCallback(XPLMWindowID window_id, int x, int y, XPLMMouseStatus mouse);
 
-    XPLMCursorStatus handle2dCursorCallback(XPLMWindowID window_id, int x, int y);
-    XPLMCursorStatus handle3dCursorCallback(XPLMWindowID window_id, int x, int y);
+    virtual XPLMCursorStatus handle2dCursorCallback(XPLMWindowID window_id, int x, int y);
+    virtual XPLMCursorStatus handle3dCursorCallback(XPLMWindowID window_id, int x, int y);
     int handle3dWheelCallback(XPLMWindowID inWindowID, int x, int y, int wheel, int clicks);
     int handle2dWheelCallback(XPLMWindowID inWindowID, int x, int y, int wheel, int clicks);
 
@@ -90,6 +90,11 @@ public:
     virtual bool frameIsBackground();
     virtual int handleMouseWheel(int x, int y, int wheel, int clicks);
     virtual float instrumentBrightness();
+    
+    int getTop2d();
+    int getBottom2d();
+    int getLeft2d();
+    int getRight2d();
 
     static int draw2dCallback(XPLMDrawingPhase phase, int is_before, void* refcon);
     static int draw3dCallback(XPLMDrawingPhase phase, int is_before, void* refcon);

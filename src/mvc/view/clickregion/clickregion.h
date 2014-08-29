@@ -29,6 +29,7 @@
 #define CLICKREGION_H
 
 #include "../../../namespaces.h"
+#include "../../../ui/cursortype.h"
 #include <boost/signals2.hpp>
 
 namespace PPLNAMESPACE {
@@ -39,7 +40,7 @@ namespace PPLNAMESPACE {
 class ClickRegion
 {
 public:
-    ClickRegion(int top, int left, int bottom, int right);
+    ClickRegion(int top, int left, int bottom, int right, CursorType type = CursorType::HandPointing);
     
     ClickRegion();
     
@@ -62,18 +63,25 @@ public:
      */
     bool checkForClick(int x, int y);
     
+    
+    bool isInRegion(int x, int y);
+    
     // Location accessors
-    float top() {
+    inline float top() const {
         return top_;
     }
-    float left() {
+    inline float left() const {
         return left_;
     }
-    float bottom() {
+    inline float bottom() const {
         return bottom_;
     }
-    float right() {
+    inline float right() const {
         return right_;
+    }
+    
+    inline CursorType cursorType() const {
+        return cursorType_;
     }
     
 private:
@@ -82,12 +90,12 @@ private:
     int bottom_;
     int right_;
     
+    CursorType cursorType_;
+    
     /**
      * @brief A signal emitted when this region is clicked on
      */
     signal_type clicked;
-    
-    bool isInRegion(int x, int y);
     
 };
 

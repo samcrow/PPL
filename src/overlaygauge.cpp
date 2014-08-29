@@ -519,6 +519,30 @@ int OverlayGauge::handleMouseWheel(int, int, int, int)
     return 1;
 }
 
+int OverlayGauge::getTop2d() {
+    int top;
+    XPLMGetWindowGeometry(window2d_id_, nullptr, &top, nullptr, nullptr);
+    return top;
+}
+
+int OverlayGauge::getBottom2d() {
+    int bottom;
+    XPLMGetWindowGeometry(window2d_id_, nullptr, nullptr, nullptr, &bottom);
+    return bottom;
+}
+
+int OverlayGauge::getLeft2d() {
+    int left;
+    XPLMGetWindowGeometry(window2d_id_, &left, nullptr, nullptr, nullptr);
+    return left;
+}
+
+int OverlayGauge::getRight2d() {
+    int right;
+    XPLMGetWindowGeometry(window2d_id_, nullptr, nullptr, &right, nullptr);
+    return right;
+}
+
 int OverlayGauge::draw2dCallback(XPLMDrawingPhase phase, int is_before, void* refcon)
 {
     OverlayGauge* window = static_cast<OverlayGauge*>(refcon);

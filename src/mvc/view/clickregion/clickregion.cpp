@@ -30,11 +30,12 @@
 namespace PPLNAMESPACE {
 
 
-ClickRegion::ClickRegion(int top, int left, int bottom, int right) :
+ClickRegion::ClickRegion(int top, int left, int bottom, int right, CursorType type) :
     top_(top),
     left_(left),
     bottom_(bottom),
-    right_(right)
+    right_(right),
+    cursorType_(type)
 {
 }
 

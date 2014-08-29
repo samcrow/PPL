@@ -85,16 +85,23 @@ void GLGraphicsContext::strokeRect(float top, float left, float bottom, float ri
     glPopAttrib();
 }
 
-void GLGraphicsContext::strokeText(std::string text, float x, float y, Typeface face, unsigned int size)
+void GLGraphicsContext::strokeText(const std::string& text, float x, float y, Typeface face, unsigned int size, bool drawBox)
 {
     FontHandle font = fontCache.get(face, size);
     Color color = strokeColor();
     
     fontManager.drawString(font, reinterpret_cast<float*>(&color), x, y, ALIGN_LEFT, text.c_str());
     
+    if(drawBox) {
+        
+        const float width = fontManager.measureString(font, size, text.c_str());
+        const float height = fontManager.getLineAscent(font, size) + fontManager.getLineDescent(font, size);
+        // Inconvenient constant offsets to make the box look nice
+        strokeRect(y + height + 2, x - 4, y + 1, x + width + 4);
+    }
 }
 
-void GLGraphicsContext::strokeTextCentered(std::string text, float centerX, float centerY, Typeface face, unsigned int size) {
+void GLGraphicsContext::strokeTextCentered(const std::string& text, float centerX, float centerY, Typeface face, unsigned int size, bool drawBox) {
     FontHandle font = fontCache.get(face, size);
     Color color = strokeColor();
     
@@ -111,6 +118,11 @@ void GLGraphicsContext::strokeTextCentered(std::string text, float centerX, floa
     
     
     fontManager.drawRange(font, reinterpret_cast<float*>(&color), left, bottom, right, top, start, end, ALIGN_CENTER);
+    
+    if(drawBox) {
+        // Inconvenient constant offsets to make the box look nice
+        strokeRect(top + 2, left - 4, bottom + 1, right + 4);
+    }
     
 }
 

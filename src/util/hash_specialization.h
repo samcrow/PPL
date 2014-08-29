@@ -1,6 +1,6 @@
 #ifndef HASH_SPECIALIZATION_H
 #define HASH_SPECIALIZATION_H
-
+#include <functional>
 /*
  * Declare a specialization of std::hash that works for
  * an enumeration. This is useful for using an enum

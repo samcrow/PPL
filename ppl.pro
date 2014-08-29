@@ -106,7 +106,10 @@ HEADERS += \
     src/plugin_namespace/pluginnamespace.h \
     src/util/hash_specialization.h \
     src/util/varadiccompiler.h \
-    src/delayedaction.h
+    src/delayedaction.h \
+    src/ui/cursormanager.h \
+    src/ui/cursor.h \
+    src/ui/cursortype.h
 
 SOURCES += \
     src/pluginpath.cpp \
@@ -138,7 +141,9 @@ SOURCES += \
     src/plugin_namespace/pathcomponent.cpp \
     src/plugin_namespace/pluginnamespace.cpp \
     src/delayedaction.cpp \
-    src/externalcommand.cpp
+    src/externalcommand.cpp \
+    src/ui/cursormanager.cpp \
+    src/ui/cursor.cpp
 
 withsound {
     HEADERS += \

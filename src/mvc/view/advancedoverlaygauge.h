@@ -36,6 +36,8 @@ namespace PPLNAMESPACE {
 
 /**
  * @brief An overlay gauge with support for click regions
+ * 
+ * 
  */
 class AdvancedOverlayGauge : public OverlayGauge
 {
@@ -46,6 +48,29 @@ public:
     void handleNonDragClick(int x_rel, int y_rel);
     
     void addClickRegion(ClickRegion* region);
+    
+    // Reimplementations to set the cursor based on 
+    virtual XPLMCursorStatus handle2dCursorCallback(XPLMWindowID window_id, int x, int y);
+    virtual XPLMCursorStatus handle3dCursorCallback(XPLMWindowID window_id, int x, int y);
+    
+    /**
+     * @brief Re-implements draw. Subclasses should override advancedDraw()
+     * instead of this method.
+     * @param left
+     * @param top
+     * @param right
+     * @param bottom
+     */
+    virtual void draw(int left, int top, int right, int bottom) final override;
+    
+    /**
+     * @brief Called like draw() to paint graphics
+     * @param left
+     * @param top
+     * @param right
+     * @param bottom
+     */
+    virtual void advancedDraw(int left, int top, int right, int bottom) = 0;
     
     /**
      * @return A const reference to the list of regions
@@ -60,6 +85,12 @@ private:
      */
     std::vector<ClickRegion*> regions;
     
+    CursorType customCursor = CursorType::Default;
+    
+    int mouseX = 0;
+    int mouseY = 0;
+
+    void drawCursor(int left, int top, int right, int bottom);
 };
 
 }

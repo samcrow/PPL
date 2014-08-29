@@ -48,9 +48,9 @@ public:
     void strokeRect(float top, float left, float bottom, float right, float width = 1);
     
    
-    virtual void strokeText(std::string text, float x, float y, Typeface face, unsigned int size);
+    virtual void strokeText(const std::string& text, float x, float y, Typeface face, unsigned int size, bool drawBox = false) override;
     
-    virtual void strokeTextCentered(std::string text, float centerX, float centerY, Typeface face = Proportional, unsigned int size = 12);
+    virtual void strokeTextCentered(const std::string& text, float centerX, float centerY, Typeface face = Proportional, unsigned int size = 12, bool drawBox = false) override;
     
     virtual ~GLGraphicsContext();
 private:

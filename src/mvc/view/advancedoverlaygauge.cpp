@@ -26,6 +26,8 @@
 // either expressed or implied, of the FreeBSD Project.
 
 #include "advancedoverlaygauge.h"
+#include "../../ui/cursormanager.h"
+#include <iostream>
 
 namespace PPLNAMESPACE {
 
@@ -57,5 +59,52 @@ const std::vector<ClickRegion*>& AdvancedOverlayGauge::clickRegions() {
     return regions;
 }
 
+void AdvancedOverlayGauge::draw(int left, int top, int right, int bottom) {
+    advancedDraw(left, top, right, bottom);
+    drawCursor(left, top, right, bottom);
 }
 
+XPLMCursorStatus AdvancedOverlayGauge::handle2dCursorCallback(XPLMWindowID /*window_id*/, int x, int y)
+{   
+    if(isVisible()) {
+        // The provided X and Y values are in screen coordinates from the bottom left corner
+        // Transform X and Y by the lower left corner of the window to make them relative to the window
+        x -= getLeft2d();
+        y -= getBottom2d();
+        
+        mouseX = x;
+        mouseY = y;
+        // Iterate backwards over the click regions, from last to first added
+        for(auto it = regions.rbegin(); it != regions.rend(); it++) {
+            // Stop if a region has been found
+            bool matched = (**it).isInRegion(x, y);
+            if(matched) {
+                customCursor = (**it).cursorType();
+                if(customCursor == CursorType::Default) {
+                    return xplm_CursorArrow;
+                }
+                else {
+                    // Hide the cursor
+                    return xplm_CursorHidden;
+                }
+            }
+        }
+    }
+    // No click region; use default cursor
+    customCursor = CursorType::Default;
+    return xplm_CursorArrow;
+}
+
+XPLMCursorStatus AdvancedOverlayGauge::handle3dCursorCallback(XPLMWindowID window_id, int x, int y)
+{
+    // Don't really know what to do for this
+    return OverlayGauge::handle3dCursorCallback(window_id, x, y);
+}
+
+void AdvancedOverlayGauge::drawCursor(int left, int top, int right, int bottom) {
+    if(customCursor != CursorType::Default && mouseX >= left && mouseX <= right && mouseY >= bottom && mouseY <= top) {
+        CursorManager::getInstance().getCursor(customCursor).draw(mouseX, mouseY);
+    }
+}
+
+}

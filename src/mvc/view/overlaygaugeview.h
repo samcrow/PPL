@@ -48,7 +48,7 @@ public:
         context(height, 0, 0, width)
     {}
     
-    void draw(int, int, int, int)
+    virtual void advancedDraw(int, int, int, int) override
     {
         View<ControllerType>::controller().draw(context);
         drawClickRegions();

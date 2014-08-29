@@ -118,19 +118,21 @@ public:
      * @param y The Y location of the lower left corner of the text
      * @param face The typeface to draw
      * @param size The font size in points to draw
+     * @param drawBox If a rectangle should be drawn around the text
      */
-    virtual void strokeText(std::string text, float x, float y, Typeface face = Proportional, unsigned int size = 12) = 0;
+    virtual void strokeText(const std::string& text, float x, float y, Typeface face = Proportional, unsigned int size = 12, bool drawBox = false) = 0;
     
     /**
      * @brief Draws text, center aligned and centerd horizontally
      * and vertically on the given center point
-     * @param text
-     * @param centerX
-     * @param centerY
-     * @param face
-     * @param size
+     * @param text The string to draw
+     * @param centerX The X location of the center of the text
+     * @param centerY The Y location of the center of the text
+     * @param face The typeface to draw
+     * @param size The font size in points to draw
+     * @param drawBox If a rectangle should be drawn around the text
      */
-    virtual void strokeTextCentered(std::string text, float centerX, float centerY, Typeface face = Proportional, unsigned int size = 12) = 0;
+    virtual void strokeTextCentered(const std::string& text, float centerX, float centerY, Typeface face = Proportional, unsigned int size = 12, bool drawBox = false) = 0;
 };
 
 }
