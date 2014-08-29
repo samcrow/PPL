@@ -30,6 +30,7 @@
 #include <cstdio>
 #include <stdexcept>
 #include <memory>
+#include <iostream>
 #include "imagedata.h"
 
 namespace PPLNAMESPACE {
@@ -92,9 +93,10 @@ void PngIO::read(IMAGEDATA& image, GLuint& type, const std::string& path) {
         type = GL_RGB;
         break;
         
-    case PNG_COLOR_TYPE_RGBA:
+    case PNG_COLOR_TYPE_RGB_ALPHA:
         type = GL_RGBA;
-    
+        break;
+        
     default:
         // Not supported
         png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
