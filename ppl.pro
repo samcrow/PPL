@@ -109,7 +109,9 @@ HEADERS += \
     src/delayedaction.h \
     src/ui/cursormanager.h \
     src/ui/cursor.h \
-    src/ui/cursortype.h
+    src/ui/cursortype.h \
+    src/scenery/probe.h \
+    src/scenery/proberesult.h
 
 SOURCES += \
     src/pluginpath.cpp \
@@ -143,7 +145,9 @@ SOURCES += \
     src/delayedaction.cpp \
     src/externalcommand.cpp \
     src/ui/cursormanager.cpp \
-    src/ui/cursor.cpp
+    src/ui/cursor.cpp \
+    src/scenery/probe.cpp \
+    src/scenery/proberesult.cpp
 
 withsound {
     HEADERS += \
