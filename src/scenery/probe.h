@@ -57,9 +57,20 @@ public:
      */
     void probeTerrain(float x, float y, float z, ProbeResult& result);
     
+    /**
+     * @brief Probes the terrain at the provided latitude and longitude
+     * and sets the result object.
+     * 
+     * The result object is set to invalid if the probe did not succeed
+     * because it did not hit terrain.
+     * f
+     * @param latitude
+     * @param longitude
+     * @param result
+     */
     void probeTerrain(double latitude, double longitude, ProbeResult& result);
     
-    virtual ~Probe();
+     ~Probe();
     
 private:
     XPLMProbeRef probeRef;
