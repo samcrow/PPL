@@ -52,8 +52,8 @@ public:
         model_ = newModel;
     }
     
-    virtual ~Controller() {
-        
+    const std::string& name() const {
+        return controllerName_;
     }
     
 protected:
@@ -69,6 +69,31 @@ private:
     
     const std::string controllerName_;
     ModelType& model_;
+    
+};
+
+/**
+ * A specialization of Controller for controllers
+ * that do not require models
+ */
+template<>
+class Controller<void>
+{
+public:  
+    
+    Controller(const std::string& name) :
+        controllerName_(name)
+    {
+        
+    }
+    
+    const std::string& name() const {
+        return controllerName_;
+    }
+    
+private:
+    
+    const std::string controllerName_;
     
 };
 
