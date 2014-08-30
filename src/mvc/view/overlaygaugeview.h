@@ -51,7 +51,6 @@ public:
     virtual void advancedDraw(int, int, int, int) override
     {
         View<ControllerType>::controller().draw(context);
-        drawClickRegions();
     }
     
     void handleKeyPress(char, XPLMKeyFlags, char) {
