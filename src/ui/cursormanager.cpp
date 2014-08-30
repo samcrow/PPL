@@ -41,28 +41,28 @@ Cursor CursorManager::createCursor(CursorType type) {
     
     switch(type) {
     case CursorType::ArrowUp: {
-        const int width = 30;
+        const int width = 27;
         const int height = 29;
         const int coords[] = {
             // Top, bottom, left, right
-            322,
-            322 - height,
-            168,
-            168 + width,
+            355,
+            355 - height,
+            171,
+            171 + width,
         };
         GLfloat ratios[8];
         createTextureCoordinates(coords, ratios);
         return Cursor(interfaceTextureId, width, height, ratios);
     }
     case CursorType::ArrowDown: {
-        const int width = 30;
+        const int width = 28;
         const int height = 29;
         const int coords[] = {
             // Top, bottom, left, right
-            354,
-            354 - height,
-            171,
-            171 + width,
+            323,
+            323 - height,
+            168,
+            168 + width,
         };
         GLfloat ratios[8];
         createTextureCoordinates(coords, ratios);
@@ -71,7 +71,7 @@ Cursor CursorManager::createCursor(CursorType type) {
         
     case CursorType::RotateLargeCounterclockwise: {
         const int width = 32;
-        const int height = 47;
+        const int height = 46;
         const int coords[] = {
             357,
             357 - height,
@@ -85,7 +85,7 @@ Cursor CursorManager::createCursor(CursorType type) {
         
     case CursorType::RotateLargeClockwise: {
         const int width = 32;
-        const int height = 47;
+        const int height = 46;
         const int coords[] = {
             357,
             357 - height,
@@ -98,13 +98,13 @@ Cursor CursorManager::createCursor(CursorType type) {
     }
         
     case CursorType::RotateMediumCounterclockwise: {
-        const int width = 31;
+        const int width = 30;
         const int height = 36;
         const int coords[] = {
             327,
             327 - height,
-            199,
-            199 + width
+            200,
+            200 + width
         };
         GLfloat ratios[8];
         createTextureCoordinates(coords, ratios);
@@ -126,13 +126,13 @@ Cursor CursorManager::createCursor(CursorType type) {
     }
         
     case CursorType::RotateSmallCounterclockwise: {
-        const int width = 31;
-        const int height = 29;
+        const int width = 30;
+        const int height = 27;
         const int coords[] = {
-            357,
-            357 - height,
-            199,
-            199 + width
+            358,
+            358 - height,
+            200,
+            200 + width
         };
         GLfloat ratios[8];
         createTextureCoordinates(coords, ratios);
@@ -140,11 +140,11 @@ Cursor CursorManager::createCursor(CursorType type) {
     }
         
     case CursorType::RotateSmallClockwise: {
-        const int width = 31;
-        const int height = 29;
+        const int width = 30;
+        const int height = 27;
         const int coords[] = {
-            357,
-            357 - height,
+            358,
+            358 - height,
             230,
             230 + width
         };
@@ -154,13 +154,13 @@ Cursor CursorManager::createCursor(CursorType type) {
     }
         
     case CursorType::ResizeHorizontal: {
-        const int width = 31;
-        const int height = 33;
+        const int width = 30;
+        const int height = 32;
         const int coords[] = {
             357,
             357 - height,
-            423,
-            423 + width
+            424,
+            424 + width
         };
         GLfloat ratios[8];
         createTextureCoordinates(coords, ratios);
@@ -168,13 +168,13 @@ Cursor CursorManager::createCursor(CursorType type) {
     }
         
     case CursorType::ResizeVertical: {
-        const int width = 31;
-        const int height = 33;
+        const int width = 30;
+        const int height = 32;
         const int coords[] = {
             357,
             357 - height,
-            455,
-            455 + width
+            456,
+            456 + width
         };
         GLfloat ratios[8];
         createTextureCoordinates(coords, ratios);
@@ -224,13 +224,13 @@ Cursor CursorManager::createCursor(CursorType type) {
     }
         
     case CursorType::HandOpen: {
-        const int width = 31;
+        const int width = 30;
         const int height = 32;
         const int coords[] = {
             323,
             323 - height,
-            327,
-            327 + width
+            328,
+            328 + width
         };
         GLfloat ratios[8];
         createTextureCoordinates(coords, ratios);
@@ -238,13 +238,13 @@ Cursor CursorManager::createCursor(CursorType type) {
     }
         
     case CursorType::HandPointing: {
-        const int width = 31;
-        const int height = 33;
+        const int width = 30;
+        const int height = 32;
         const int coords[] = {
             357,
             357 - height,
-            327,
-            327 + width
+            328,
+            328 + width
         };
         GLfloat ratios[8];
         createTextureCoordinates(coords, ratios);
@@ -252,13 +252,13 @@ Cursor CursorManager::createCursor(CursorType type) {
     }
         
     case CursorType::HandClosed: {
-        const int width = 31;
+        const int width = 30;
         const int height = 32;
         const int coords[] = {
             323,
             323 - height,
-            359,
-            359 + width
+            360,
+            360 + width
         };
         GLfloat ratios[8];
         createTextureCoordinates(coords, ratios);
@@ -266,13 +266,13 @@ Cursor CursorManager::createCursor(CursorType type) {
     }
         
     case CursorType::SmallCircle: {
-        const int width = 31;
-        const int height = 33;
+        const int width = 30;
+        const int height = 32;
         const int coords[] = {
             357,
             357 - height,
-            359,
-            359 + width
+            360,
+            360 + width
         };
         GLfloat ratios[8];
         createTextureCoordinates(coords, ratios);
