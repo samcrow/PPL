@@ -56,6 +56,8 @@ public:
         return controllerName_;
     }
     
+    virtual ~Controller() = default;
+    
 protected:
     /**
      * @brief Returns a pointer to the model currently in use by this controller
@@ -90,6 +92,8 @@ public:
     const std::string& name() const {
         return controllerName_;
     }
+    
+    virtual ~Controller() = default;
     
 private:
     

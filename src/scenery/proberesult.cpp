@@ -26,6 +26,7 @@
 // either expressed or implied, of the FreeBSD Project.
 
 #include "proberesult.h"
+#include <XPLMGraphics.h>
 
 namespace PPLNAMESPACE {
 
@@ -67,6 +68,16 @@ float ProbeResult::velocityZ() const {
 
 bool ProbeResult::isWater() const {
     return water;
+}
+
+double ProbeResult::altitude() const {
+    double latitude;
+    double longitdue;
+    double altitude;
+    
+    XPLMLocalToWorld(x(), y(), z(), &latitude, &longitdue, &altitude);
+    
+    return altitude;
 }
 
 ProbeResult::ProbeResult(const XPLMProbeInfo_t& info) :

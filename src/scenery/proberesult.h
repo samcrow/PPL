@@ -34,7 +34,10 @@ namespace PPLNAMESPACE {
 
 /**
  * @brief The ProbeResult class provides information
- * that is accesed by a {@link Probe}
+ * that is accesed by a {@link Probe}.
+ * 
+ * If this probe is not valid, the return values of all
+ * methods other than isValid() are undefined.
  */
 class ProbeResult
 {
@@ -47,9 +50,32 @@ public:
     
     bool isValid() const;
     
+    /**
+     * @brief Returns the X location of the ground in X-Plane's local
+     * coordinate system. The X axis is east-west. Positive X points east.
+     * @return 
+     */
     float x() const;
+    /**
+     * @brief Returns the Y location of the ground in X-Plane's local
+     * coordinate system. The X axis is up-down. Positive X points up.
+     * At locations other than x = 0 and z = 0, the Y axis will not
+     * be perfectly up-down due to the earth's curvature.
+     * @return 
+     */
     float y() const;
+    /**
+     * @brief Returns the Z location of the ground in X-Plane's local
+     * coordinate system. The X axis is north-south. Positive X points south.
+     * @return 
+     */
     float z() const;
+    
+    /**
+     * @brief Returns the altitude of the probed point in meters
+     * @return 
+     */
+    double altitude() const;
     
     float normalX() const;
     float normalY() const;
