@@ -28,6 +28,8 @@
 #include "periodicaction.h"
 #include <stdexcept>
 
+namespace PPLNAMESPACE {
+
 PeriodicAction::PeriodicAction()
 {
 }
@@ -81,4 +83,6 @@ float PeriodicAction::callback(float, float, int, void *inRefCon) {
     
     // Ask to be called again after the set period
     return action->period;
+}
+
 }

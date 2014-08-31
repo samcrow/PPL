@@ -27,8 +27,11 @@
 
 #ifndef PERIODICACTION_H
 #define PERIODICACTION_H
+#include "namespaces.h"
 #include <functional>
 #include <XPLMProcessing.h>
+
+namespace PPLNAMESPACE {
 
 /**
  * @brief The PeriodicAction class manages a function
@@ -109,5 +112,7 @@ private:
     static float callback(float, float, int, void* inRefCon);
     
 };
+
+}
 
 #endif // PERIODICACTION_H
