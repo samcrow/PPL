@@ -33,7 +33,7 @@ namespace PPLNAMESPACE {
 
 Probe::Probe()
 {
-    XPLMCreateProbe(xplm_ProbeY);
+    probeRef = XPLMCreateProbe(xplm_ProbeY);
 }
 
 void Probe::probeTerrain(float x, float y, float z, ProbeResult& result) {
