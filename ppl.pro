@@ -111,7 +111,8 @@ HEADERS += \
     src/ui/cursor.h \
     src/ui/cursortype.h \
     src/scenery/probe.h \
-    src/scenery/proberesult.h
+    src/scenery/proberesult.h \
+    src/periodicaction.h
 
 SOURCES += \
     src/pluginpath.cpp \
@@ -147,7 +148,9 @@ SOURCES += \
     src/ui/cursormanager.cpp \
     src/ui/cursor.cpp \
     src/scenery/probe.cpp \
-    src/scenery/proberesult.cpp
+    src/scenery/proberesult.cpp \
+    src/periodicaction.cpp
+
 
 withsound {
     HEADERS += \
