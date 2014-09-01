@@ -54,7 +54,9 @@
 
 #include "imageio/targaio.h"
 #include "imageio/bitmapio.h"
+#ifdef PPL_ENABLE_PNG
 #include "imageio/pngio.h"
+#endif
 
 using namespace PPLNAMESPACE;
 
@@ -86,6 +88,7 @@ Texture::Texture(const std::string& file_name)
         
         
     }
+#ifdef PPL_ENABLE_PNG
     // PNG
     else if (file_name.rfind(".png") != std::string::npos) {
         GLuint type;
@@ -103,7 +106,9 @@ Texture::Texture(const std::string& file_name)
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
         
-    } else if (file_name.rfind(".tga") != std::string::npos)
+    }
+#endif
+    else if (file_name.rfind(".tga") != std::string::npos)
     {
         GLuint type;
         

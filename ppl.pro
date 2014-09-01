@@ -89,7 +89,6 @@ HEADERS += \
     src/signalcommand.h \
     src/imageio/bitmapio.h \
     src/imageio/imagedata.h \
-    src/imageio/pngio.h \
     src/imageio/targaio.h \
     src/mvc/controller.h \
     src/mvc/view.h \
@@ -133,7 +132,6 @@ SOURCES += \
     src/command.cpp \
     src/signalcommand.cpp \
     src/imageio/bitmapio.cpp \
-    src/imageio/pngio.cpp \
     src/imageio/targaio.cpp \
     src/mvc/view/clickregion/clickregion.cpp \
     src/mvc/view/advancedoverlaygauge.cpp \
@@ -192,6 +190,19 @@ withserialization {
     HEADERS += src/sharedobject.h
     SOURCES += src/sharedobject.cpp
 
+}
+
+# Configuration option adds support for PNG files
+withpng {
+    DEFINES += PPL_ENABLE_PNG
+    HEADERS += src/imageio/pngio.h
+    SOURCES += src/imageio/pngio.cpp
+
+    # libpng
+    macx {
+        INCLUDEPATH += /opt/local/include
+        LIBS += -L/opt/local/lib/libpng-static -lpng
+    }
 }
 
 # Boost Signals2
