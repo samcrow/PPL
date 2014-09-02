@@ -78,8 +78,8 @@ public:
      * and makes it known
      */
     template < typename T2 >
-    operator = (T2 newValue) {
-        value = newValue;
+    void operator = (T2 newValue) {
+        value_ = newValue;
         known_ = true;
     }
     

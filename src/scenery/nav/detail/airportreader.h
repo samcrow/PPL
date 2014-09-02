@@ -28,6 +28,7 @@
 #ifndef AIRPORTREADER_H
 #define AIRPORTREADER_H
 #include "../../../namespaces.h"
+#include "../../../util/uncertain.h"
 #include <fstream>
 
 namespace PPLNAMESPACE {
@@ -39,6 +40,13 @@ namespace detail {
 class AirportReader
 {
 public:
+    
+    enum class AirportType {
+        LandAirport = 1,
+        SeaplaneBase = 16,
+        Heliport = 17,
+    };
+    
     /**
      * @brief Constructor
      * @param filePath The path to find the apt.dat file at
@@ -48,9 +56,25 @@ public:
      */
     AirportReader(const std::string& filePath, std::fstream::pos_type position);
     
+    float elevation();
+    std::string code();
+    std::string name();
+    AirportType type();
+    
 private:
     
     std::ifstream stream;
+    
+    /// Airport elevation, feet
+    uncertain<float> elevation_;
+    /// Airport code
+    uncertain<std::string> code_;
+    /// Airport name
+    uncertain<std::string> name_;
+    /// Airport type
+    uncertain<AirportType> type_;
+    
+    void readFirstLine();
 };
 
 

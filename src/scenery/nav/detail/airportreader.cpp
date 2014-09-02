@@ -37,6 +37,58 @@ AirportReader::AirportReader(const std::string& filePath, std::fstream::pos_type
     stream.seekg(position);
 }
 
+float AirportReader::elevation() {
+    if(!elevation_.known()) {
+        readFirstLine();
+    }
+    return elevation_.value();
+}
+
+std::string AirportReader::code() {
+    if(!code_.known()) {
+        readFirstLine();
+    }
+    return code_.value();
+}
+
+std::string AirportReader::name() {
+    if(!name_.known()) {
+        readFirstLine();
+    }
+    return name_.value();
+}
+
+AirportReader::AirportType AirportReader::type() {
+    if(!type_.known()) {
+        readFirstLine();
+    }
+    return type_.value();
+}
+
+void AirportReader::readFirstLine() {
+    // Type
+    std::underlying_type<AirportType>::type airportType;
+    stream >> airportType;
+    type_ = static_cast< AirportType >(airportType);
+    
+    // Elevation
+    stream >> elevation_;
+    // Two depreciated values
+    int dummy;
+    stream >> dummy;
+    stream >> dummy;
+    //Name: Rest of line
+    std::string name;
+    // Read
+    while(!stream.eof()) {
+        const char c = stream.get();
+        if(c == '\n') {
+            break;
+        }
+        name.push_back(c);
+    }
+    name_ = name;
+}
 
 }
 }
