@@ -72,7 +72,9 @@ void AirportReader::readFirstLine() {
     type_ = static_cast< AirportType >(airportType);
     
     // Elevation
-    stream >> elevation_;
+    float elevation;
+    stream >> elevation;
+    elevation_ = elevation;
     // Two depreciated values
     int dummy;
     stream >> dummy;
