@@ -90,6 +90,8 @@ private:
      * @return 
      */
     bool nextLineWithCode(std::initializer_list<int> codes);
+    
+    std::string readLine();
 };
 
 }

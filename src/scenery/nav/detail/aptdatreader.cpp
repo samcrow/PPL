@@ -26,6 +26,7 @@
 // either expressed or implied, of the FreeBSD Project.
 
 #include "aptdatreader.h"
+#include <sstream>
 
 namespace PPLNAMESPACE {
 namespace detail {
@@ -43,9 +44,9 @@ AirportReader AptDatReader::getAirportByCode(const std::string& code) {
     while(nextLineWithCode({1, 16, 17})) {
         // Cursor is now before the beginning of the line
         const std::streamsize lineStart = stream.tellg();
-        // Read and ignore elevation and two depreciated values
+        // Read and ignore code, elevation, and two depreciated values
         int dummy;
-        for(int i = 0; i < 3; i++) {
+        for(int i = 0; i < 4; i++) {
             stream >> dummy;
         }
         
@@ -86,28 +87,16 @@ bool AptDatReader::nextLineWithCode(std::initializer_list<int> codes) {
     while(!stream.eof()) {
         
         int foundCode;
-        
-        // Try to read an integer
-        const std::streamsize initialPosition = stream.tellg();
+        const std::streamsize lineStart = stream.tellg();
+        std::istringstream stream(readLine());
         stream >> foundCode;
-        if(stream.rdstate() & std::ios::failbit) {
-            // Couldn't read an integer
-            // Maybe read the next line
-            if(!stream.eof()) {
-                skipLine();
-                stream.clear();
-            }
-            else {
-                // End of file
-                return false;
-            }
-        }
+        
         
         for(int code : codes) {
             // Check for a matching code
             if(foundCode == code) {
                 // Seek back to before the code
-                stream.seekg(initialPosition);
+                stream.seekg(lineStart);
                 return true;
             }
         }
@@ -123,6 +112,19 @@ bool AptDatReader::nextLineWithCode(int code) {
 
 void AptDatReader::skipLine() {
     stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+std::string AptDatReader::readLine() {
+    std::string line;
+    while(!stream.eof()) {
+        char c = stream.get();
+        if(c == '\n') {
+            break;
+        }
+        line.push_back(c);
+    }
+    stream.clear();
+    return line;
 }
 
 }
