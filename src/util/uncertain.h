@@ -25,57 +25,79 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#ifndef VARADICCOMPILER_H
-#define VARADICCOMPILER_H
+#ifndef UNCERTAIN_H
+#define UNCERTAIN_H
 #include "../namespaces.h"
-#include <array>
 
 namespace PPLNAMESPACE {
 
 /**
- * @brief Provides a method that compiles
- * varadic arguments into a list
+ * Stores an object and a flag that describes whether this value is known
  */
-class VaradicCompiler
-{
+template < typename T >
+class uncertain {
 public:
+    /**
+     * @brief Creates an unknown object
+     */
+    uncertain() :
+        known_(false)
+    {
+        
+    }
+    /**
+     * @brief Creates a known object from the provided value
+     * @param value
+     */
+    uncertain(const T& value) :
+        known_(true),
+        value_(value)
+    {
+        
+    }
+    /**
+     * @brief Creates a known object from the provided value
+     * @param value
+     */
+    uncertain(T&& value) :
+        known_(true),
+        value_(value)
+    {
+        
+    }
+    /**
+     * @brief Returns the value. The result is undefined
+     * if this instance is unknown
+     * @return 
+     */
+    const T& value() const {
+        return value_;
+    }
+    /**
+     * Assigns the given value to this object
+     * and makes it known
+     */
+    template < typename T2 >
+    operator = (T2 newValue) {
+        value = newValue;
+        known_ = true;
+    }
+    
+    bool known() const {
+        return known_;
+    }
     
     /**
-     * Returns an array of objects containing the provided varadic arguments.
-     * Each argument after the first argument must be implicitly convertible to the
-     * type of the first argument.
+     * @brief Returns the value stored in this object
      */
-    template < typename T, typename... As >
-    static std::array< T, 1 + sizeof...(As) > compile(T first, As... others) {
-        // Create an array
-        std::array< T, 1 + sizeof...(As) > vector;
-        // Create another array from the compilation of the others
-        const std::array< T, sizeof...(As) > supplement = compile(others...);
-        
-        // Put item 0 in the array
-        vector[0] = first;
-        // Copy other items starting at index 1
-        typename std::array< T, 1 + sizeof...(As) >::iterator item1 = vector.begin();
-        std::advance(item1, 1);
-        std::copy(supplement.begin(), supplement.end(), item1);
-        
-        return vector;
+    operator T() const {
+        return value_;
     }
     
-    template < typename T >
-    static std::array<T, 1> compile(T arg) {
-        std::array<T, 1> vector;
-        vector[0] = arg;
-        return vector;
-    }
-    
-    template < typename T >
-    static std::array<T, 0> compile() {
-        return std::array<T, 0>();
-    }
-    
-    VaradicCompiler() = delete;
+private:
+    bool known_ = false;
+    T value_;
 };
 
 }
-#endif // VARADICCOMPILER_H
+#endif // UNCERTAIN_H

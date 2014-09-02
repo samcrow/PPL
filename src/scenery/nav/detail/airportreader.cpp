@@ -25,57 +25,18 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#ifndef VARADICCOMPILER_H
-#define VARADICCOMPILER_H
-#include "../namespaces.h"
-#include <array>
+#include "airportreader.h"
 
 namespace PPLNAMESPACE {
+namespace detail {
 
-/**
- * @brief Provides a method that compiles
- * varadic arguments into a list
- */
-class VaradicCompiler
+AirportReader::AirportReader(const std::string& filePath, std::fstream::pos_type position) :
+    stream(filePath, std::ios::in)
 {
-public:
-    
-    /**
-     * Returns an array of objects containing the provided varadic arguments.
-     * Each argument after the first argument must be implicitly convertible to the
-     * type of the first argument.
-     */
-    template < typename T, typename... As >
-    static std::array< T, 1 + sizeof...(As) > compile(T first, As... others) {
-        // Create an array
-        std::array< T, 1 + sizeof...(As) > vector;
-        // Create another array from the compilation of the others
-        const std::array< T, sizeof...(As) > supplement = compile(others...);
-        
-        // Put item 0 in the array
-        vector[0] = first;
-        // Copy other items starting at index 1
-        typename std::array< T, 1 + sizeof...(As) >::iterator item1 = vector.begin();
-        std::advance(item1, 1);
-        std::copy(supplement.begin(), supplement.end(), item1);
-        
-        return vector;
-    }
-    
-    template < typename T >
-    static std::array<T, 1> compile(T arg) {
-        std::array<T, 1> vector;
-        vector[0] = arg;
-        return vector;
-    }
-    
-    template < typename T >
-    static std::array<T, 0> compile() {
-        return std::array<T, 0>();
-    }
-    
-    VaradicCompiler() = delete;
-};
+    // Move to the start position
+    stream.seekg(position);
+}
+
 
 }
-#endif // VARADICCOMPILER_H
+}

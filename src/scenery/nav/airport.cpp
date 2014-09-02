@@ -25,57 +25,57 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#ifndef VARADICCOMPILER_H
-#define VARADICCOMPILER_H
-#include "../namespaces.h"
-#include <array>
+#include "airport.h"
+#include <stdexcept>
 
 namespace PPLNAMESPACE {
 
-/**
- * @brief Provides a method that compiles
- * varadic arguments into a list
- */
-class VaradicCompiler
-{
-public:
-    
-    /**
-     * Returns an array of objects containing the provided varadic arguments.
-     * Each argument after the first argument must be implicitly convertible to the
-     * type of the first argument.
-     */
-    template < typename T, typename... As >
-    static std::array< T, 1 + sizeof...(As) > compile(T first, As... others) {
-        // Create an array
-        std::array< T, 1 + sizeof...(As) > vector;
-        // Create another array from the compilation of the others
-        const std::array< T, sizeof...(As) > supplement = compile(others...);
-        
-        // Put item 0 in the array
-        vector[0] = first;
-        // Copy other items starting at index 1
-        typename std::array< T, 1 + sizeof...(As) >::iterator item1 = vector.begin();
-        std::advance(item1, 1);
-        std::copy(supplement.begin(), supplement.end(), item1);
-        
-        return vector;
+Airport Airport::findInNavDatabase(const std::string& code) {
+    Airport instance;
+    instance.navRef_ = XPLMFindNavAid(nullptr, code.c_str(), nullptr, nullptr, nullptr, xplm_Nav_Airport);
+    if(instance.navRef_ == XPLM_NAV_NOT_FOUND) {
+        throw std::invalid_argument("No airport with the requested ID was found");
     }
+    // Reserve space in the strings for copying the information
+    instance.name_.resize(256);
+    // Get information
+    XPLMGetNavAidInfo(instance.navRef_, nullptr, &instance.latitude_, &instance.longitude_, &instance.elevation_, nullptr, nullptr, nullptr, &*instance.name_.begin(), nullptr);
     
-    template < typename T >
-    static std::array<T, 1> compile(T arg) {
-        std::array<T, 1> vector;
-        vector[0] = arg;
-        return vector;
+    return instance;
+}
+
+std::string Airport::name() const {
+    return name_;
+}
+
+std::string Airport::code() const {
+    return code_;
+}
+
+float Airport::elevation() const {
+    return elevation_;
+}
+
+float Airport::latitude() const {
+    return latitude_;
+}
+
+float Airport::longitude() const {
+    return longitude_;
+}
+
+XPLMNavRef Airport::underlyingReference() {
+    if(navRef_ == XPLM_NAV_NOT_FOUND) {
+        navRef_ = findNavRef();
+        if(navRef_ == XPLM_NAV_NOT_FOUND) {
+            throw new std::runtime_error("No navaid with this airport ID found by X-Plane");
+        }
     }
-    
-    template < typename T >
-    static std::array<T, 0> compile() {
-        return std::array<T, 0>();
-    }
-    
-    VaradicCompiler() = delete;
-};
+    return navRef_;
+}
+
+XPLMNavRef Airport::findNavRef() {
+    return XPLMFindNavAid(nullptr, code_.c_str(), nullptr, nullptr, nullptr, xplm_Nav_Airport);
+}
 
 }
-#endif // VARADICCOMPILER_H

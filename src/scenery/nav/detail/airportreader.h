@@ -25,57 +25,35 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#ifndef VARADICCOMPILER_H
-#define VARADICCOMPILER_H
-#include "../namespaces.h"
-#include <array>
+#ifndef AIRPORTREADER_H
+#define AIRPORTREADER_H
+#include "../../../namespaces.h"
+#include <fstream>
 
 namespace PPLNAMESPACE {
+namespace detail {
 
 /**
- * @brief Provides a method that compiles
- * varadic arguments into a list
+ * @brief The AirportReader class reads airport information from an apt.dat file
  */
-class VaradicCompiler
+class AirportReader
 {
 public:
-    
     /**
-     * Returns an array of objects containing the provided varadic arguments.
-     * Each argument after the first argument must be implicitly convertible to the
-     * type of the first argument.
+     * @brief Constructor
+     * @param filePath The path to find the apt.dat file at
+     * @param position The position in the file to start at. This should be the position
+     * so that the first read operation from this position will return the airport row code
+     * (1, 16, or 17)
      */
-    template < typename T, typename... As >
-    static std::array< T, 1 + sizeof...(As) > compile(T first, As... others) {
-        // Create an array
-        std::array< T, 1 + sizeof...(As) > vector;
-        // Create another array from the compilation of the others
-        const std::array< T, sizeof...(As) > supplement = compile(others...);
-        
-        // Put item 0 in the array
-        vector[0] = first;
-        // Copy other items starting at index 1
-        typename std::array< T, 1 + sizeof...(As) >::iterator item1 = vector.begin();
-        std::advance(item1, 1);
-        std::copy(supplement.begin(), supplement.end(), item1);
-        
-        return vector;
-    }
+    AirportReader(const std::string& filePath, std::fstream::pos_type position);
     
-    template < typename T >
-    static std::array<T, 1> compile(T arg) {
-        std::array<T, 1> vector;
-        vector[0] = arg;
-        return vector;
-    }
+private:
     
-    template < typename T >
-    static std::array<T, 0> compile() {
-        return std::array<T, 0>();
-    }
-    
-    VaradicCompiler() = delete;
+    std::ifstream stream;
 };
 
+
 }
-#endif // VARADICCOMPILER_H
+}
+#endif // AIRPORTREADER_H

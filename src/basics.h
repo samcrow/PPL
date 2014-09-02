@@ -27,6 +27,7 @@
 
 #ifndef BASICS_H
 #define BASICS_H
+#include <type_traits>
 
 #if (defined(_WIN32) || defined(__CYGWIN__)) && defined(_MSC_VER)   // Windows && MS Visual C
 #    define MSVC_EXPORT __declspec(dllexport)

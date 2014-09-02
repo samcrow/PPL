@@ -111,7 +111,11 @@ HEADERS += \
     src/ui/cursortype.h \
     src/scenery/probe.h \
     src/scenery/proberesult.h \
-    src/periodicaction.h
+    src/periodicaction.h \
+    src/scenery/nav/airport.h \
+    src/util/uncertain.h \
+    src/scenery/nav/detail/airportreader.h \
+    src/scenery/nav/detail/aptdatreader.h
 
 SOURCES += \
     src/pluginpath.cpp \
@@ -147,7 +151,10 @@ SOURCES += \
     src/ui/cursor.cpp \
     src/scenery/probe.cpp \
     src/scenery/proberesult.cpp \
-    src/periodicaction.cpp
+    src/periodicaction.cpp \
+    src/scenery/nav/airport.cpp \
+    src/scenery/nav/detail/airportreader.cpp \
+    src/scenery/nav/detail/aptdatreader.cpp
 
 
 withsound {
