@@ -38,35 +38,41 @@ AptDatCache::AptDatCache(const std::string& path) :
     
 }
 
-std::streamsize AptDatCache::findAirportByCode(const std::string& code) {
+std::streamsize AptDatCache::findAirportBlocking(const std::string& code) {
+    
+    std::future<std::streamsize> future = findAirport(code);
+    // Wait for the operation to be completed
+    future.wait();
+    return future.get();
+}
 
+std::future<std::streamsize> AptDatCache::findAirport(const std::string& code) {
+    // First check if the airport is already cached
     try {
-        return airportCache.at(code);
+        const std::streamsize pos = airportCache.at(code);
+        std::promise<std::streamsize> promise;
+        promise.set_value(pos);
+        return promise.get_future();
     }
-    catch (std::out_of_range&) {
-        // Not in cache
-        if(reader.allAirportsRead()) {
+    catch(std::out_of_range&) {
+        if(!reader.allAirportsRead()) {
             // Don't have anything more to read
             throw NoSuchAirportException("No airport with the requested ID was found");
         }
+        // Start reading from the file
+        if(!reader.readInProgress()) {
+            auto* promise = new std::promise<std::streamsize>();
+            promises.set(code, promise);
+            startFindingAllAirports();
+            return promise->get_future();
+        }
         else {
-            // Try to read from the file
-            if(reader.allAirportsRead()) {
-                throw NoSuchAirportException("No airport");
-            }
-            if(!reader.readInProgress()) {
-                reader.findAirport(airportCache, code);
-                try {
-                    return airportCache.at(code);
-                }
-                catch (std::out_of_range&) {
-                    throw NoSuchAirportException("No airport, after searching");
-                }
-            }
-            else {
-                // Reading is in progress; can't start another one right now
-                throw ReadInProgressException("Airport not yet found; reading still in progress");
-            }
+            // Reading is in progress; Add this promise to be handled by the other thread
+            // Potential bug: If this method determines that this airport is not yet cached
+            // and another thread caches it before the promise is added, the promise may never be fulfilled.
+            auto* promise = new std::promise<std::streamsize>();
+            promises.set(code, promise);
+            return promise->get_future();
         }
     }
 }
@@ -99,11 +105,11 @@ void AptDatCache::startFindingAllAirports() {
 
 void AptDatCache::findAllAirports() {    
     // Find airports; don't stop until the end
-    reader.findAirportsUntil(airportCache, [](const std::string&){ return false; });
+    reader.findAirportsUntil(airportCache, promises, [](const std::string&){ return false; });
 }
 
 void AptDatCache::findAirport_private(std::string code) {
-    reader.findAirportsUntil(airportCache, [&code](const std::string& foundCode) { return code == foundCode; });
+    reader.findAirportsUntil(airportCache, promises, [&code](const std::string& foundCode) { return code == foundCode; });
 }
 
 }

@@ -25,57 +25,70 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "airport.h"
-#include <stdexcept>
+#ifndef AIRPORTFREQUENCY_H
+#define AIRPORTFREQUENCY_H
+
+#include "../namespaces.h"
+#include "frequency.h"
+#include <ostream>
 
 namespace PPLNAMESPACE {
 
-Airport Airport::findInNavDatabase(const std::string& code) {
-    Airport instance;
-    instance.navRef_ = XPLMFindNavAid(nullptr, code.c_str(), nullptr, nullptr, nullptr, xplm_Nav_Airport);
-    if(instance.navRef_ == XPLM_NAV_NOT_FOUND) {
-        throw std::invalid_argument("No airport with the requested ID was found");
-    }
-    // Reserve space in the strings for copying the information
-    instance.name_.resize(256);
-    // Get information
-    XPLMGetNavAidInfo(instance.navRef_, nullptr, &instance.latitude_, &instance.longitude_, &instance.elevation_, nullptr, nullptr, nullptr, &*instance.name_.begin(), nullptr);
+/**
+ * @brief A type of frequency that includes a name and a type identifying its
+ * use at an airport
+ */
+class AirportFrequency : public Frequency
+{
+public:
     
-    return instance;
+    // Types of frequencies
+    enum Type {
+        Recorded = 50,
+        Unicom = 51,
+        ClearanceDelivery = 52,
+        Ground = 53,
+        Tower = 54,
+        Approach = 56,
+        Departure = 57,
+    };
+    
+    /**
+     * @brief Default constructor.
+     * 
+     * The frequency will be set to zero.
+     */
+    AirportFrequency(Type type);
+    
+    AirportFrequency(hertz_type hertz, Type type);
+    
+    AirportFrequency(float megahertz, Type type);
+    
+    AirportFrequency(hertz_type hertz, Type type, const std::string& name = std::string());
+    
+    AirportFrequency(float megahertz, Type type, const std::string& name = std::string());
+    
+    /**
+     * @brief Parses a string representation of a number of megahertz
+     * @param megahertz
+     */
+    AirportFrequency(const std::string& megahertz, Type type, const std::string& name = std::string());
+    
+    Type type() const;
+    std::string name() const;
+    
+    void setType(Type newType);
+    void setName(const std::string& newName);
+    
+    friend std::ostream& operator << (std::ostream& stream, const AirportFrequency& frequency);
+    
+private:
+    
+    Type type_;
+    std::string name_;
+    
+};
+
 }
 
-std::string Airport::name() const {
-    return name_;
-}
-
-std::string Airport::code() const {
-    return code_;
-}
-
-float Airport::elevation() const {
-    return elevation_;
-}
-
-float Airport::latitude() const {
-    return latitude_;
-}
-
-float Airport::longitude() const {
-    return longitude_;
-}
-
-XPLMNavRef Airport::underlyingReference() {
-    if(navRef_ == XPLM_NAV_NOT_FOUND) {
-        navRef_ = findNavRef();
-        if(navRef_ == XPLM_NAV_NOT_FOUND) {
-            throw new std::runtime_error("No navaid with this airport ID found by X-Plane");
-        }
-    }
-    return navRef_;
-}
-
-XPLMNavRef Airport::findNavRef() {
-    return XPLMFindNavAid(nullptr, code_.c_str(), nullptr, nullptr, nullptr, xplm_Nav_Airport);
-}
-
-}
+#endif // AIRPORTFREQUENCY_H

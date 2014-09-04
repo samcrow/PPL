@@ -28,8 +28,14 @@
 #ifndef AIRPORT_H
 #define AIRPORT_H
 #include <XPLMNavigation.h>
-#include "../../namespaces.h"
+#include "navaid.h"
+#include "runway.h"
+#include "airportfrequency.h"
+#include "detail/aptdatcache.h"
+#include "../util/uncertain.h"
+#include <memory>
 #include <string>
+#include <future>
 
 namespace PPLNAMESPACE {
 
@@ -37,20 +43,20 @@ namespace PPLNAMESPACE {
 /**
  * @brief Represents an airport from X-Plane's airport data
  */
-class Airport
+class Airport : public Navaid
 {
 public:
     
-    /**
-     * @brief Finds an airport in X-Plane's in-memory copy
-     * of the database using the functionality in XPLMNavigation.
-     * 
-     * This is generally faster than parsing the apt.dat file.
-     * 
-     * @param id
-     * @return 
-     */
-    static Airport findInNavDatabase(const std::string& code);
+    enum class Type {
+        Airport,
+        SeaplaneBase,
+        Heliport,
+    };
+    
+    typedef std::vector<Runway> runway_list_type;
+    typedef std::vector<AirportFrequency> frequency_list_type;
+    
+    Airport(const std::string& code);
     
     /**
      * @brief Returns the name of this airport
@@ -69,16 +75,16 @@ public:
      */
     float elevation() const;
     
-    /**
-     * @brief Returns the airport's latitude
-     * @return 
-     */
-    float latitude() const;
-    /**
-     * @brief Returns the airport's longitude
-     * @return 
-     */
-    float longitude() const;
+    // Next: Accessors for information from the airport data file
+    
+    bool hasRunways() const;
+    const runway_list_type& runways();
+    
+    bool hasFrequencies() const;
+    const frequency_list_type& frequencies();
+    
+    bool hasType() const;
+    Type type();
     
 protected:
     
@@ -96,8 +102,10 @@ private:
     std::string name_;
     std::string code_;
     float elevation_;
-    float latitude_;
-    float longitude_;
+    
+    uncertain<runway_list_type> runways_;
+    uncertain<frequency_list_type> frequencies_;
+    uncertain<Type> type_;
     
     /**
      * @brief The reference to X-Plane's entry for this airport
@@ -105,6 +113,15 @@ private:
     XPLMNavRef navRef_ = XPLM_NAV_NOT_FOUND;
     
     XPLMNavRef findNavRef();
+    
+    void copyDataFromCache();
+    
+    // Data cache operations
+    static std::unique_ptr<detail::AptDatCache> cache_;
+    
+    /// Returns a cache used to access more advanced airport
+    /// information
+    static detail::AptDatCache& cache();
 };
 
 }

@@ -28,11 +28,12 @@
 #ifndef CONCURRENTHASHMAP_H
 #define CONCURRENTHASHMAP_H
 #include <unordered_map>
+#include <functional>
 #include <mutex>
 
 /**
  * Maps keys to values using an underlying map and provides synchronization
- * on operations. This class is thread-safe.
+ * on operations. This class is thread-safe. Each method appears to execute atomically.
  * 
  * @param K the key type
  * @param V the value type
@@ -43,7 +44,8 @@ class ConcurrentMap
 {
 public:
     typedef K key_type;
-    typedef V value_type;
+    typedef V mapped_type;
+    typedef std::pair<K, V> value_type;
     
     /**
      * @brief Creates a mapping from the provided
@@ -84,6 +86,24 @@ public:
     }
     
     /**
+     * @brief Removes and returns the value corresponding to the requested key
+     * @param key
+     * @return 
+     * @throws std::out_of_range if the provided key does not map
+     * to any value
+     */
+    V remove(const K& key) {
+        std::unique_lock<std::mutex> lock(mutex);
+        auto iter = map.find(key);
+        if(iter == map.end()) {
+            throw std::out_of_range("No value found in map");
+        }
+        V value = iter->second;
+        map.erase(iter);
+        return value;
+    }
+    
+    /**
      * @brief Returns true if this map contains the requested key.
      * Otherwise returns false.
      * @param key
@@ -92,6 +112,43 @@ public:
     bool contains(const K& key) {
         std::unique_lock<std::mutex> lock(mutex);
         return map.find(key) != map.end();
+    }
+    
+    /**
+     * Deletes eache value stored in this map, and then
+     * clears the map.
+     * 
+     * Enabled only if the value type is a pointer.
+     */
+    template < typename V2 = V >
+    typename std::enable_if<std::is_pointer<V2>::value>::type
+    deleteAll() {
+        std::unique_lock<std::mutex> lock(mutex);
+        for(auto iter = map.begin(); iter != map.end(); iter++) {
+            V pointer = iter->second;
+            delete pointer;
+        }
+        map.clear();
+    }
+    
+    typedef std::function< void (value_type) > operation;
+    
+    /**
+     * @brief Applys the provided operation to each element
+     * in the map, in the order returned by the map's iterator.
+     * 
+     * @param op
+     */
+    void applyToAll(operation op) {
+        std::unique_lock<std::mutex> lock(mutex);
+        for(value_type pair : map) {
+            op(pair);
+        }
+    }
+    
+    void clear() {
+        std::unique_lock<std::mutex> lock(mutex);
+        map.clear();
     }
     
 private:

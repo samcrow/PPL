@@ -25,34 +25,42 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "runway.h"
-#include "../../util/latlon.h"
+#ifndef PPL_EXCEPTIONS_H
+#define PPL_EXCEPTIONS_H
+#include <stdexcept>
+#include "../namespaces.h"
 
 namespace PPLNAMESPACE {
 
 
-std::string Runway::name() const {
-    return end1_.name() + '/' + end2_.name();
+/**
+ * @brief Superclass for exceptions thrown from failed airport searches
+ */
+class AirportSearchException : public std::runtime_error {
+public:
+    AirportSearchException(const std::string& what_arg) : std::runtime_error(what_arg) {}
+    AirportSearchException(const char* what_arg) : std::runtime_error(what_arg) {}
+};
+/**
+ * @brief An exception thrown when a search was perfomed for an airport
+ * that does not exist
+ */
+class NoSuchAirportException : public AirportSearchException {
+public:
+    NoSuchAirportException(const std::string& what_arg) : AirportSearchException(what_arg) {}
+    NoSuchAirportException(const char* what_arg) : AirportSearchException(what_arg) {}
+};
+
+/**
+ * @brief An exception thrown when a search was performed for an airport that may exist,
+ * but the airport data file is still being parsed
+ */
+class ReadInProgressException : public AirportSearchException {
+public:
+    ReadInProgressException(const std::string& what_arg) : AirportSearchException(what_arg) {}
+    ReadInProgressException(const char* what_arg) : AirportSearchException(what_arg) {}
+};
+
 }
 
-std::string Runway::name() {
-    if(!name_.known()) {
-        // call the const version of this function
-        name_ = static_cast<const Runway*>(this)->name();
-    }
-    return name_.value();
-}
-
-double Runway::length() const {
-    return LatLon::distance(LatLon(end1_.latitude(), end1_.longitude()), LatLon(end2_.latitude(), end2_.longitude()));
-}
-
-double Runway::length() {
-    if(!length_.known()) {
-        // Call the const version
-        length_ = static_cast<const Runway*>(this)->length();
-    }
-    return length_.value();
-}
-
-}
+#endif // PPL_EXCEPTIONS_H

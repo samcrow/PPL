@@ -28,12 +28,12 @@
 #ifndef AIRPORTCACHE_H
 #define AIRPORTCACHE_H
 
-#include "../../../namespaces.h"
-#include "../../../util/concurrentmap.h"
+#include "../../namespaces.h"
+#include "../../util/concurrentmap.h"
 #include "../exceptions.h"
 #include <fstream>
 #include <unordered_map>
-#include <mutex>
+#include <future>
 #include "aptdatreader.h"
 
 namespace PPLNAMESPACE {
@@ -72,7 +72,10 @@ public:
      * @throws ReadInProgressException if no airport with the required ID is known
      * and it could not be searched for because a search is already in progress
      */
-    std::streamsize findAirportByCode(const std::string& code);
+    std::streamsize findAirportBlocking(const std::string& code);
+    
+    
+    std::future<std::streamsize> findAirport(const std::string& code);
     
     /**
      * @brief Returns true if the airport with the provided code
@@ -113,7 +116,12 @@ private:
     
     AptDatReader reader;
     
+    /// Maps airport IDs to file positions
     ConcurrentMap<std::string, std::streamsize> airportCache;
+    /// Maps airport IDs to promises to return file positions.
+    /// The code that reads the file will delete this promise
+    /// after it is fulfilled.
+    ConcurrentMap<std::string, std::promise<std::streamsize> * > promises;
     
     void findAllAirports();
     void findAirport_private(std::string code);

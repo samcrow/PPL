@@ -1,4 +1,4 @@
-// Copyright (c) 2013, Philipp Muenzel mail@philippmuenzel.de
+// Copyright (c) 2014, Sam Crow samcrow@uw.edu
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,35 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "smoothed.h"
+#ifndef NAVAID_H
+#define NAVAID_H
+#include "../namespaces.h"
+#include "latlon.h"
 
+namespace PPLNAMESPACE {
 
+/**
+ * @brief A base class for navigational aids and related entities
+ */
+class Navaid
+{
+public:
+    Navaid(const LatLon& position);
+    Navaid(LatLon&& position);
+    Navaid();
+    
+    /// Returns this navaid's position
+    const LatLon& position() const;
+    
+protected:
+    
+    void setPosition(const LatLon& position);
+    void setPosition(LatLon&& position);
+    
+private:
+    LatLon position_;
+};
+
+}
+
+#endif // NAVAID_H

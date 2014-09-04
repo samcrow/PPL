@@ -28,8 +28,8 @@
 #ifndef RUNWAY_H
 #define RUNWAY_H
 #include <string>
-#include "../../namespaces.h"
-#include "../../util/uncertain.h"
+#include "../namespaces.h"
+#include "../util/uncertain.h"
 
 namespace PPLNAMESPACE {
 

@@ -25,70 +25,34 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#ifndef AIRPORTFREQUENCY_H
-#define AIRPORTFREQUENCY_H
-
-#include "../../namespaces.h"
-#include "frequency.h"
-#include <ostream>
+#include "runway.h"
+#include "latlon.h"
 
 namespace PPLNAMESPACE {
 
-/**
- * @brief A type of frequency that includes a name and a type identifying its
- * use at an airport
- */
-class AirportFrequency : public Frequency
-{
-public:
-    
-    // Types of frequencies
-    enum Type {
-        Recorded = 50,
-        Unicom = 51,
-        ClearanceDelivery = 52,
-        Ground = 53,
-        Tower = 54,
-        Approach = 56,
-        Departure = 57,
-    };
-    
-    /**
-     * @brief Default constructor.
-     * 
-     * The frequency will be set to zero.
-     */
-    AirportFrequency(Type type);
-    
-    AirportFrequency(hertz_type hertz, Type type);
-    
-    AirportFrequency(float megahertz, Type type);
-    
-    AirportFrequency(hertz_type hertz, Type type, const std::string& name = std::string());
-    
-    AirportFrequency(float megahertz, Type type, const std::string& name = std::string());
-    
-    /**
-     * @brief Parses a string representation of a number of megahertz
-     * @param megahertz
-     */
-    AirportFrequency(const std::string& megahertz, Type type, const std::string& name = std::string());
-    
-    Type type() const;
-    std::string name() const;
-    
-    void setType(Type newType);
-    void setName(const std::string& newName);
-    
-    friend std::ostream& operator << (std::ostream& stream, const AirportFrequency& frequency);
-    
-private:
-    
-    Type type_;
-    std::string name_;
-    
-};
 
+std::string Runway::name() const {
+    return end1_.name() + '/' + end2_.name();
 }
 
-#endif // AIRPORTFREQUENCY_H
+std::string Runway::name() {
+    if(!name_.known()) {
+        // call the const version of this function
+        name_ = static_cast<const Runway*>(this)->name();
+    }
+    return name_.value();
+}
+
+double Runway::length() const {
+    return LatLon::distance(LatLon(end1_.latitude(), end1_.longitude()), LatLon(end2_.latitude(), end2_.longitude()));
+}
+
+double Runway::length() {
+    if(!length_.known()) {
+        // Call the const version
+        length_ = static_cast<const Runway*>(this)->length();
+    }
+    return length_.value();
+}
+
+}

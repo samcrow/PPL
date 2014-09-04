@@ -27,8 +27,8 @@
 
 #ifndef AIRPORTREADER_H
 #define AIRPORTREADER_H
-#include "../../../namespaces.h"
-#include "../../../util/uncertain.h"
+#include "../../namespaces.h"
+#include "../../util/uncertain.h"
 #include "../runway.h"
 #include "../airportfrequency.h"
 #include <fstream>

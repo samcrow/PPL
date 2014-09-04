@@ -112,21 +112,18 @@ HEADERS += \
     src/scenery/probe.h \
     src/scenery/proberesult.h \
     src/periodicaction.h \
-    src/scenery/nav/airport.h \
+    src/nav/airport.h \
     src/util/uncertain.h \
-    src/scenery/nav/detail/airportreader.h \
-    src/scenery/nav/detail/aptdatreader.h \
-    src/mvc/examples/landinggear/landinggearcontroller.h \
-    src/mvc/examples/landinggear/landinggearmodel.h \
-    src/mvc/examples/landinggear/landinggearmodelxplane.h \
-    src/mvc/examples/landinggear/landinggeartoastconnector.h \
-    src/scenery/nav/detail/aptdatcache.h \
-    src/scenery/nav/airportfrequency.h \
-    src/scenery/nav/exceptions.h \
-    src/scenery/nav/frequency.h \
-    src/scenery/nav/runway.h \
+    src/nav/detail/airportreader.h \
+    src/nav/detail/aptdatreader.h \
+    src/nav/detail/aptdatcache.h \
+    src/nav/airportfrequency.h \
+    src/nav/exceptions.h \
+    src/nav/frequency.h \
+    src/nav/runway.h \
     src/util/concurrentmap.h \
-    src/util/latlon.h
+    src/nav/latlon.h \
+    src/nav/navaid.h
 
 SOURCES += \
     src/pluginpath.cpp \
@@ -141,7 +138,6 @@ SOURCES += \
     src/log.cpp \
     src/logwriter.cpp \
     src/menuitem.cpp \
-    src/smoothed.cpp \
     src/processor.cpp \
     src/vertexbuffer.cpp \
     src/command.cpp \
@@ -163,17 +159,15 @@ SOURCES += \
     src/scenery/probe.cpp \
     src/scenery/proberesult.cpp \
     src/periodicaction.cpp \
-    src/scenery/nav/airport.cpp \
-    src/scenery/nav/detail/airportreader.cpp \
-    src/scenery/nav/detail/aptdatreader.cpp \
-    src/mvc/examples/landinggear/landinggearcontroller.cpp \
-    src/mvc/examples/landinggear/landinggearmodelxplane.cpp \
-    src/mvc/examples/landinggear/landinggeartoastconnector.cpp \
-    src/scenery/nav/detail/aptdatcache.cpp \
-    src/scenery/nav/airportfrequency.cpp \
-    src/scenery/nav/frequency.cpp \
-    src/scenery/nav/runway.cpp \
-    src/util/latlon.cpp
+    src/nav/airport.cpp \
+    src/nav/detail/airportreader.cpp \
+    src/nav/detail/aptdatreader.cpp \
+    src/nav/detail/aptdatcache.cpp \
+    src/nav/airportfrequency.cpp \
+    src/nav/frequency.cpp \
+    src/nav/runway.cpp \
+    src/nav/latlon.cpp \
+    src/nav/navaid.cpp
 
 
 withsound {

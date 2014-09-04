@@ -29,7 +29,7 @@
 #define FREQUENCY_H
 #include <cstdint>
 #include <string>
-#include "../../namespaces.h"
+#include "../namespaces.h"
 
 namespace PPLNAMESPACE {
 
