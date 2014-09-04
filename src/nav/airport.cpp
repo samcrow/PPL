@@ -144,7 +144,7 @@ detail::AptDatCache& Airport::cache() {
 }
 
 void Airport::copyDataFromCache() {
-    detail::AirportReader reader(cache().path(), cache().findAirportBlocking(code_));
+    detail::AirportReader reader(cache().path(), cache().findAirport(code_));
     runways_ = reader.runways();
     frequencies_ = reader.frequencies();
     switch(reader.type()) {

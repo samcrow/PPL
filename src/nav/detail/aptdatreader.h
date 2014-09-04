@@ -69,9 +69,9 @@ public:
      * @param code
      * @return 
      */
-    template < typename M1, typename M2 >
-    void findAirport(M1& map, M2& promises, const std::string& code) {
-        findAirportsUntil(map, promises, [code](const std::string& foundCode) {
+    template < typename M1 >
+    void findAirport(M1& map, const std::string& code) {
+        findAirportsUntil(map, [code](const std::string& foundCode) {
             return code == foundCode;
         });
     }
@@ -80,8 +80,8 @@ public:
      * Finds and caches airports into the provided map until the provided
      * predicate returns true for the last read airport code
      */
-    template < typename M1, typename M2 >
-    void findAirportsUntil(M1& map, M2& promises, airport_stop_predicate predicate) {
+    template < typename M1 >
+    void findAirportsUntil(M1& map,  airport_stop_predicate predicate) {
         readInProgress_.store(true);
         ensureOpen();
         moveToBeginning();
@@ -116,18 +116,6 @@ public:
             
             // Add this airport to the cache
             map.set(foundCode, lineStart);
-            // If a promise was created, fulfill it
-            try {
-                auto* promise = promises.remove(foundCode);
-                promise->set_value(lineStart);
-                
-                // This might cause problems
-                delete promise;
-            }
-            catch (std::out_of_range&) {
-                // No promise
-                // Do nothing
-            }
             
             // Stop if predicate
             if(predicate(foundCode)) {
@@ -135,24 +123,8 @@ public:
                 return;
             }
         }
+        
         // Here means the stream is at the end of file
-        
-        // If there are any outstanding promises, deal with them
-        promises.applyToAll([&map](typename M2::value_type pair) {
-            const std::string& airportCode = pair.first;
-            std::promise<std::streamsize>* promise = pair.second;
-            
-            try {
-                promise->set_value(map.at(airportCode));
-            }
-            catch(...) {
-                promise->set_exception(std::make_exception_ptr(NoSuchAirportException("No airport found")));
-            }
-            // This might cause problems
-            delete promise;
-        });
-        promises.clear();
-        
         allAirportsRead_ = true;
         stream.clear();
         readInProgress_.store(false);
