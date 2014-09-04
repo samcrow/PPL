@@ -115,7 +115,18 @@ HEADERS += \
     src/scenery/nav/airport.h \
     src/util/uncertain.h \
     src/scenery/nav/detail/airportreader.h \
-    src/scenery/nav/detail/aptdatreader.h
+    src/scenery/nav/detail/aptdatreader.h \
+    src/mvc/examples/landinggear/landinggearcontroller.h \
+    src/mvc/examples/landinggear/landinggearmodel.h \
+    src/mvc/examples/landinggear/landinggearmodelxplane.h \
+    src/mvc/examples/landinggear/landinggeartoastconnector.h \
+    src/scenery/nav/detail/aptdatcache.h \
+    src/scenery/nav/airportfrequency.h \
+    src/scenery/nav/exceptions.h \
+    src/scenery/nav/frequency.h \
+    src/scenery/nav/runway.h \
+    src/util/concurrentmap.h \
+    src/util/latlon.h
 
 SOURCES += \
     src/pluginpath.cpp \
@@ -154,7 +165,15 @@ SOURCES += \
     src/periodicaction.cpp \
     src/scenery/nav/airport.cpp \
     src/scenery/nav/detail/airportreader.cpp \
-    src/scenery/nav/detail/aptdatreader.cpp
+    src/scenery/nav/detail/aptdatreader.cpp \
+    src/mvc/examples/landinggear/landinggearcontroller.cpp \
+    src/mvc/examples/landinggear/landinggearmodelxplane.cpp \
+    src/mvc/examples/landinggear/landinggeartoastconnector.cpp \
+    src/scenery/nav/detail/aptdatcache.cpp \
+    src/scenery/nav/airportfrequency.cpp \
+    src/scenery/nav/frequency.cpp \
+    src/scenery/nav/runway.cpp \
+    src/util/latlon.cpp
 
 
 withsound {
