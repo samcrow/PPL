@@ -25,82 +25,70 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "aptdatreader.h"
-#include <sstream>
-#include <iostream>
+#ifndef AIRPORTFREQUENCY_H
+#define AIRPORTFREQUENCY_H
+
+#include "../../namespaces.h"
+#include "frequency.h"
+#include <ostream>
 
 namespace PPLNAMESPACE {
-namespace detail {
 
-AptDatReader::AptDatReader(const std::string& filePath) :
-    filePath(filePath)
+/**
+ * @brief A type of frequency that includes a name and a type identifying its
+ * use at an airport
+ */
+class AirportFrequency : public Frequency
 {
-    readInProgress_.store(false);
-}
-
-
-const std::string& AptDatReader::path() const {
-    return filePath;
-}
-
-bool AptDatReader::allAirportsRead() const {
-    return allAirportsRead_;
-}
-
-bool AptDatReader::readInProgress() const {
-    return readInProgress_.load();
-}
-
-void AptDatReader::ensureOpen() {
-    if(!stream.is_open()) {
-        stream.open(filePath, std::ios::in);
-        if(stream.rdstate() & std::ios::failbit) {
-            throw std::runtime_error("Could not open apt.dat file");
-        }
-    }
-}
-
-void AptDatReader::moveToBeginning() {
-    // Dismiss errors
-    stream.clear();
-    stream.seekg(0);
+public:
     
-    skipLine();
-    skipLine();
-}
-
-
-void AptDatReader::skipLine() {
-    stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-}
-
-std::string AptDatReader::readLine() {
-    const auto readMoreLineTerminators = [this] {
-        while(true) {
-            char c = stream.peek();
-            if(c == '\n' || c == '\r') {
-                // Read and ignore that character
-                stream.get();
-            }
-            else {
-                break;
-            }
-        }
+    // Types of frequencies
+    enum Type {
+        Recorded = 50,
+        Unicom = 51,
+        ClearanceDelivery = 52,
+        Ground = 53,
+        Tower = 54,
+        Approach = 56,
+        Departure = 57,
     };
     
-    std::string line;
-    while(!stream.eof()) {
-        stream.clear();
-        char c = stream.get();
-        if(c == '\n' || c == '\r') {
-            readMoreLineTerminators();
-            break;
-        }
-        line.push_back(c);
-    }
-    stream.clear();
-    return line;
-}
+    /**
+     * @brief Default constructor.
+     * 
+     * The frequency will be set to zero.
+     */
+    AirportFrequency(Type type);
+    
+    AirportFrequency(hertz_type hertz, Type type);
+    
+    AirportFrequency(float megahertz, Type type);
+    
+    AirportFrequency(hertz_type hertz, Type type, const std::string& name = std::string());
+    
+    AirportFrequency(float megahertz, Type type, const std::string& name = std::string());
+    
+    /**
+     * @brief Parses a string representation of a number of megahertz
+     * @param megahertz
+     */
+    AirportFrequency(const std::string& megahertz, Type type, const std::string& name = std::string());
+    
+    Type type() const;
+    std::string name() const;
+    
+    void setType(Type newType);
+    void setName(const std::string& newName);
+    
+    friend std::ostream& operator << (std::ostream& stream, const AirportFrequency& frequency);
+    
+private:
+    
+    Type type_;
+    std::string name_;
+    
+};
 
 }
-}
+
+#endif // AIRPORTFREQUENCY_H

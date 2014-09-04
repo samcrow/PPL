@@ -29,7 +29,10 @@
 #define AIRPORTREADER_H
 #include "../../../namespaces.h"
 #include "../../../util/uncertain.h"
+#include "../runway.h"
+#include "../airportfrequency.h"
 #include <fstream>
+#include <vector>
 
 namespace PPLNAMESPACE {
 namespace detail {
@@ -40,6 +43,9 @@ namespace detail {
 class AirportReader
 {
 public:
+    
+    typedef std::vector< const Runway > runway_list_type;
+    typedef std::vector< const AirportFrequency > frequency_list_type;
     
     enum class AirportType {
         LandAirport = 1,
@@ -61,8 +67,24 @@ public:
     std::string name();
     AirportType type();
     
+    /**
+     * @brief Returns a reference to a list of runways at this airport.
+     * This list does not include water runways or helipads.
+     * @return 
+     */
+    const runway_list_type& runways();
+    
+    /**
+     * @brief Returns a reference to a list of radio frequencies associated
+     * with this airport
+     * @return 
+     */
+    const frequency_list_type& frequencies();
+    
 private:
     
+    /// Position in the file of the beginning of the airport record
+    std::streampos beginning;
     std::ifstream stream;
     
     /// Airport elevation, feet
@@ -74,7 +96,21 @@ private:
     /// Airport type
     uncertain<AirportType> type_;
     
+    /// Runways
+    uncertain< runway_list_type > runways_;
+    
+    /// Frequencies
+    uncertain< frequency_list_type> frequencies_;
+    
     void readFirstLine();
+    
+    void readRunways();
+    
+    void readFrequencies();
+    
+    void moveToBeginning();
+    
+    void skipLine();
 };
 
 

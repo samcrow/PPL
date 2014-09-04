@@ -25,95 +25,81 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#ifndef UNCERTAIN_H
-#define UNCERTAIN_H
-#include "../namespaces.h"
-
-namespace PPLNAMESPACE {
+#ifndef CONCURRENTHASHMAP_H
+#define CONCURRENTHASHMAP_H
+#include <unordered_map>
+#include <mutex>
 
 /**
- * Stores an object and a flag that describes whether this value is known
+ * Maps keys to values using an underlying map and provides synchronization
+ * on operations. This class is thread-safe.
+ * 
+ * @param K the key type
+ * @param V the value type
+ * @param Map The type of underlying map to use
  */
-template < typename T >
-class uncertain {
+template < typename K, typename V, class Map = std::unordered_map<K, V> >
+class ConcurrentMap
+{
 public:
+    typedef K key_type;
+    typedef V value_type;
+    
     /**
-     * @brief Creates an unknown object
-     */
-    uncertain() :
-        known_(false)
-    {
-        
-    }
-    /**
-     * @brief Creates a known object from the provided value
+     * @brief Creates a mapping from the provided
+     * key to the provided value. If a mapping
+     * corresponding to the key already exists,
+     * it is discarded.
+     * @param key
      * @param value
      */
-    uncertain(const T& value) :
-        known_(true),
-        value_(value)
-    {
-        
+    void set(const K& key, const V& value) {
+        std::unique_lock<std::mutex> lock(mutex);
+        map[key] = value;
     }
+    
     /**
-     * @brief Creates a known object from the provided value
+     * @brief Creates a mapping from the provided
+     * key to the provided value. If a mapping
+     * corresponding to the key already exists,
+     * it is discarded.
+     * @param key
      * @param value
      */
-    uncertain(T&& value) :
-        known_(true),
-        value_(value)
-    {
-        
+    void set(K&& key, V&& value) {
+        std::unique_lock<std::mutex> lock(mutex);
+        map[key] = value;
     }
+    
     /**
-     * @brief Returns the value. The result is undefined
-     * if this instance is unknown
+     * @brief Returns the value corresponding to the requested key
+     * @param value
+     * @return 
+     * @throws std::out_of_range if the provided key does not map
+     * to anything
+     */
+    V at(const K& key) {
+        std::unique_lock<std::mutex> lock(mutex);
+        return map.at(key);
+    }
+    
+    /**
+     * @brief Returns true if this map contains the requested key.
+     * Otherwise returns false.
+     * @param key
      * @return 
      */
-    const T& value() const {
-        return value_;
-    }
-    
-    /**
-     * @brief Returns a non-const reference to the value
-     * @return 
-     */
-    T& value() {
-        return value_;
-    }
-    
-    /**
-     * Assigns the given value to this object
-     * and makes it known
-     */
-    template < typename T2 >
-    void operator = (T2 newValue) {
-        value_ = newValue;
-        known_ = true;
-    }
-    
-    bool known() const {
-        return known_;
-    }
-    
-    /**
-     * @brief Sets this object to have a known value
-     */
-    void affirm() {
-        known_ = true;
-    }
-    
-    /**
-     * @brief Returns the value stored in this object
-     */
-    operator T() const {
-        return value_;
+    bool contains(const K& key) {
+        std::unique_lock<std::mutex> lock(mutex);
+        return map.find(key) != map.end();
     }
     
 private:
-    bool known_ = false;
-    T value_;
+    
+    Map map;
+    
+    std::mutex mutex;
+    
 };
 
-}
-#endif // UNCERTAIN_H
+#endif // CONCURRENTHASHMAP_H

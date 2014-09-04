@@ -28,16 +28,17 @@
 #ifndef APTDATREADER_H
 #define APTDATREADER_H
 #include <fstream>
-#include <initializer_list>
+#include <unordered_map>
+#include <functional>
+#include <atomic>
 #include "../../../namespaces.h"
-#include "airportreader.h"
 
 namespace PPLNAMESPACE {
 namespace detail {
 
 /**
- * @brief The AptDatReader class parses an apt.dat file and provides access to
- * other objects used to read specific entries from the file.
+ * @brief The AptDatReader class parses an apt.dat file and finds the locations
+ * of airports in the file
  */
 class AptDatReader
 {
@@ -45,18 +46,97 @@ public:
     AptDatReader(const std::string& filePath);
     
     /**
-     * @brief Creates and returns an AirportReader that can be used to access
-     * information on the airport with the requested code
+     * @brief A function called with the code of the last read airport as a parameter.
+     * If the function returns true, airport processing will stop
+     */
+    typedef std::function< bool (const std::string&) > airport_stop_predicate;
+    
+    /**
+     * @brief Finds an airport with the given ID and adds its
+     * position to the cache. Also adds the positions of other airports
+     * that are found on the way.
+     * 
+     * If the requested airport is not found, it is not added
+     * to the cache.
+     * 
      * @param code
      * @return 
-     * @throws std::runtime_error if no airport with the provided code could be found
      */
-    AirportReader getAirportByCode(const std::string& code);
+    template < typename Map >
+    void findAirport(Map& map, const std::string& code) {
+        findAirportsUntil(map, [code](const std::string& foundCode) {
+            return code == foundCode;
+        });
+    }
+    
+    /**
+     * Finds and caches airports into the provided map until the provided
+     * predicate returns true for the last read airport code
+     */
+    template < typename Map >
+    void findAirportsUntil(Map& map, airport_stop_predicate predicate) {
+        readInProgress_.store(true);
+        ensureOpen();
+        moveToBeginning();
+        
+        // Read airports (code 1, 16, or 17)
+        while(!stream.eof()) {
+            const std::streamsize lineStart = stream.tellg();
+            int id;
+            stream >> id;
+            
+            if(stream.fail()){
+                stream.clear();
+                // Try the next line
+                skipLine();
+                continue;
+            }
+            
+            // Ignore IDs that are not 1, 16, or 17
+            if(!( id == 1 || id == 16 || id == 17)) {
+                skipLine();
+                continue;
+            }
+            
+            // Read and ignore elevation and two depreciated values
+            int dummy;
+            for(int i = 0; i < 3; i++) {
+                stream >> dummy;
+            }
+            
+            std::string foundCode;
+            stream >> foundCode;
+            
+            // Add this airport to the cache
+            map.set(foundCode, lineStart);
+            
+            // Stop if predicate
+            if(predicate(foundCode)) {
+                readInProgress_.store(false);
+                return;
+            }
+        }
+        // Here means the stream is at the end of file
+        allAirportsRead_ = true;
+        stream.clear();
+        readInProgress_.store(false);
+    }
+    
+    
+    const std::string& path() const;
+    
+    bool allAirportsRead() const;
+    
+    bool readInProgress() const;
     
 private:
     const std::string filePath;
     
     std::ifstream stream;
+    
+    bool allAirportsRead_ = false;
+    
+    std::atomic_bool readInProgress_;
     
     /**
      * @brief Opens the stream if it is not open
@@ -74,23 +154,7 @@ private:
      * then returns
      */
     void skipLine();
-    
-    /**
-     * @brief Reads characters from the stream until a line with the given line code
-     * is found, then seeks back to a position before the line code
-     * @param code The line code to search for
-     * @return true if a line was found, false if the end of file was reached or some other
-     * problem occurred
-     */
-    bool nextLineWithCode(int code);
-    
-    /**
-     * @brief Like readUntilLineCode(int), but reads until any of the provided codes is found
-     * @param codes
-     * @return 
-     */
-    bool nextLineWithCode(std::initializer_list<int> codes);
-    
+
     std::string readLine();
 };
 

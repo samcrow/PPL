@@ -25,82 +25,42 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "aptdatreader.h"
-#include <sstream>
-#include <iostream>
+#ifndef PPL_EXCEPTIONS_H
+#define PPL_EXCEPTIONS_H
+#include <stdexcept>
+#include "../../namespaces.h"
 
 namespace PPLNAMESPACE {
-namespace detail {
-
-AptDatReader::AptDatReader(const std::string& filePath) :
-    filePath(filePath)
-{
-    readInProgress_.store(false);
-}
 
 
-const std::string& AptDatReader::path() const {
-    return filePath;
-}
+/**
+ * @brief Superclass for exceptions thrown from failed airport searches
+ */
+class AirportSearchException : public std::runtime_error {
+public:
+    AirportSearchException(const std::string& what_arg) : std::runtime_error(what_arg) {}
+    AirportSearchException(const char* what_arg) : std::runtime_error(what_arg) {}
+};
+/**
+ * @brief An exception thrown when a search was perfomed for an airport
+ * that does not exist
+ */
+class NoSuchAirportException : public AirportSearchException {
+public:
+    NoSuchAirportException(const std::string& what_arg) : AirportSearchException(what_arg) {}
+    NoSuchAirportException(const char* what_arg) : AirportSearchException(what_arg) {}
+};
 
-bool AptDatReader::allAirportsRead() const {
-    return allAirportsRead_;
-}
-
-bool AptDatReader::readInProgress() const {
-    return readInProgress_.load();
-}
-
-void AptDatReader::ensureOpen() {
-    if(!stream.is_open()) {
-        stream.open(filePath, std::ios::in);
-        if(stream.rdstate() & std::ios::failbit) {
-            throw std::runtime_error("Could not open apt.dat file");
-        }
-    }
-}
-
-void AptDatReader::moveToBeginning() {
-    // Dismiss errors
-    stream.clear();
-    stream.seekg(0);
-    
-    skipLine();
-    skipLine();
-}
-
-
-void AptDatReader::skipLine() {
-    stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-}
-
-std::string AptDatReader::readLine() {
-    const auto readMoreLineTerminators = [this] {
-        while(true) {
-            char c = stream.peek();
-            if(c == '\n' || c == '\r') {
-                // Read and ignore that character
-                stream.get();
-            }
-            else {
-                break;
-            }
-        }
-    };
-    
-    std::string line;
-    while(!stream.eof()) {
-        stream.clear();
-        char c = stream.get();
-        if(c == '\n' || c == '\r') {
-            readMoreLineTerminators();
-            break;
-        }
-        line.push_back(c);
-    }
-    stream.clear();
-    return line;
-}
+/**
+ * @brief An exception thrown when a search was performed for an airport that may exist,
+ * but the airport data file is still being parsed
+ */
+class ReadInProgressException : public AirportSearchException {
+public:
+    ReadInProgressException(const std::string& what_arg) : AirportSearchException(what_arg) {}
+    ReadInProgressException(const char* what_arg) : AirportSearchException(what_arg) {}
+};
 
 }
-}
+
+#endif // PPL_EXCEPTIONS_H

@@ -25,95 +25,87 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#ifndef UNCERTAIN_H
-#define UNCERTAIN_H
+#ifndef LATLON_H
+#define LATLON_H
 #include "../namespaces.h"
+#include <boost/math/constants/constants.hpp>
 
 namespace PPLNAMESPACE {
 
 /**
- * Stores an object and a flag that describes whether this value is known
+ * @brief The LatLon class stores a latitude and longitude and provides related operations.
+ * 
  */
-template < typename T >
-class uncertain {
+class LatLon
+{
 public:
+    LatLon();
+    LatLon(double latitude, double longitude);
+    
+    double latitude() const;
+    double longitude() const;
+    
+    void setLatitude(double newLatitude);
+    void setLongitude(double newLongitude);
+    
     /**
-     * @brief Creates an unknown object
-     */
-    uncertain() :
-        known_(false)
-    {
-        
-    }
-    /**
-     * @brief Creates a known object from the provided value
-     * @param value
-     */
-    uncertain(const T& value) :
-        known_(true),
-        value_(value)
-    {
-        
-    }
-    /**
-     * @brief Creates a known object from the provided value
-     * @param value
-     */
-    uncertain(T&& value) :
-        known_(true),
-        value_(value)
-    {
-        
-    }
-    /**
-     * @brief Returns the value. The result is undefined
-     * if this instance is unknown
+     * @brief Returns the distance, in meters, to another point
+     * @param other
      * @return 
      */
-    const T& value() const {
-        return value_;
-    }
+    double distanceTo(const LatLon& other) const;
     
     /**
-     * @brief Returns a non-const reference to the value
+     * @brief Returns the bearing, in degrees, to another point
+     * @param other
      * @return 
      */
-    T& value() {
-        return value_;
-    }
+    double bearingTo(const LatLon& other) const;
+    
+    // Static methods
     
     /**
-     * Assigns the given value to this object
-     * and makes it known
+     * @brief Returns the distance in meters between the two provided points
+     * @param p1
+     * @param p2
+     * @return 
      */
-    template < typename T2 >
-    void operator = (T2 newValue) {
-        value_ = newValue;
-        known_ = true;
-    }
-    
-    bool known() const {
-        return known_;
-    }
+    static double distance(const LatLon& p1, const LatLon& p2);
     
     /**
-     * @brief Sets this object to have a known value
+     * @brief Returns the bearing of the beginning of a great circle path
+     * from the `from` point to the `to` point
+     * @param from
+     * @param to
+     * @return 
      */
-    void affirm() {
-        known_ = true;
-    }
+    static double initialBearing(const LatLon& from, const LatLon& to);
     
     /**
-     * @brief Returns the value stored in this object
+     * @brief Returns the bearing of the end of a great circle path
+     * from the `from` point to the `to` point
+     * @param from
+     * @param to
+     * @return 
      */
-    operator T() const {
-        return value_;
-    }
+    static double finalBearing(const LatLon& from, const LatLon& to);
     
 private:
-    bool known_ = false;
-    T value_;
+    double latitude_ = 0;
+    double longitude_ = 0;
+    
+    /// Mean radius of Earth, in meters
+    static constexpr double EARTH_MEAN_RADIUS = 6371000;
+    
+    static inline double toRadians(double degrees) {
+        return degrees / 180 * boost::math::double_constants::pi;
+    }
+    
+    static inline double toDegrees(double radians) {
+        return radians * 180 / boost::math::double_constants::pi;
+    }
+    
 };
 
 }
-#endif // UNCERTAIN_H
+#endif // LATLON_H

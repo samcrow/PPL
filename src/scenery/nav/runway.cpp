@@ -25,82 +25,34 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "aptdatreader.h"
-#include <sstream>
-#include <iostream>
+#include "runway.h"
+#include "../../util/latlon.h"
 
 namespace PPLNAMESPACE {
-namespace detail {
 
-AptDatReader::AptDatReader(const std::string& filePath) :
-    filePath(filePath)
-{
-    readInProgress_.store(false);
+
+std::string Runway::name() const {
+    return end1_.name() + '/' + end2_.name();
 }
 
-
-const std::string& AptDatReader::path() const {
-    return filePath;
-}
-
-bool AptDatReader::allAirportsRead() const {
-    return allAirportsRead_;
-}
-
-bool AptDatReader::readInProgress() const {
-    return readInProgress_.load();
-}
-
-void AptDatReader::ensureOpen() {
-    if(!stream.is_open()) {
-        stream.open(filePath, std::ios::in);
-        if(stream.rdstate() & std::ios::failbit) {
-            throw std::runtime_error("Could not open apt.dat file");
-        }
+std::string Runway::name() {
+    if(!name_.known()) {
+        // call the const version of this function
+        name_ = static_cast<const Runway*>(this)->name();
     }
+    return name_.value();
 }
 
-void AptDatReader::moveToBeginning() {
-    // Dismiss errors
-    stream.clear();
-    stream.seekg(0);
-    
-    skipLine();
-    skipLine();
+double Runway::length() const {
+    return LatLon::distance(LatLon(end1_.latitude(), end1_.longitude()), LatLon(end2_.latitude(), end2_.longitude()));
 }
 
-
-void AptDatReader::skipLine() {
-    stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-}
-
-std::string AptDatReader::readLine() {
-    const auto readMoreLineTerminators = [this] {
-        while(true) {
-            char c = stream.peek();
-            if(c == '\n' || c == '\r') {
-                // Read and ignore that character
-                stream.get();
-            }
-            else {
-                break;
-            }
-        }
-    };
-    
-    std::string line;
-    while(!stream.eof()) {
-        stream.clear();
-        char c = stream.get();
-        if(c == '\n' || c == '\r') {
-            readMoreLineTerminators();
-            break;
-        }
-        line.push_back(c);
+double Runway::length() {
+    if(!length_.known()) {
+        // Call the const version
+        length_ = static_cast<const Runway*>(this)->length();
     }
-    stream.clear();
-    return line;
+    return length_.value();
 }
 
-}
 }
