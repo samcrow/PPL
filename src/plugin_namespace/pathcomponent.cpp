@@ -69,11 +69,11 @@ std::string PathComponent::sanitize(const std::string &raw) {
     
     // 2: Collapse spaces and dashes into underscores
     const std::regex spaceCollapsor("[\\s-]+");
-    sanitized = std::regex_replace(sanitized, spaceCollapsor, "_");
+    sanitized = std::regex_replace(sanitized, spaceCollapsor, std::string("_"));
     
     // 3: Remove any other characters
     const std::regex otherChars("[^a-zA-Z0-9_]+");
-    sanitized = std::regex_replace(sanitized, otherChars, "");
+    sanitized = std::regex_replace(sanitized, otherChars, std::string(""));
     
     return sanitized;
 }

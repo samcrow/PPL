@@ -44,8 +44,8 @@ class AirportReader
 {
 public:
     
-    typedef std::vector< const Runway > runway_list_type;
-    typedef std::vector< const AirportFrequency > frequency_list_type;
+    typedef std::vector< Runway > runway_list_type;
+    typedef std::vector< AirportFrequency > frequency_list_type;
     
     enum class AirportType {
         LandAirport = 1,

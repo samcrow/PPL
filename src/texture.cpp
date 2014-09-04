@@ -39,6 +39,11 @@
 #include <Windows.h>
 #include <gl\gl.h>
 #include <gl\glu.h>
+// Fix for old OpenGL version on Windows
+#ifndef GL_CLAMP_TO_EDGE
+#define GL_CLAMP_TO_EDGE 0x812F
+#endif
+
 #elif LIN
 #include <GL/gl.h>
 #include <GL/glu.h>

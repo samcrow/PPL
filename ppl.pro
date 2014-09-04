@@ -42,14 +42,14 @@ macx {
 win32 {
     DEFINES += APL=0 IBM=1 LIN=0
     !win32-msvc2008:!win32-msvc2010 {
-        QMAKE_CXXFLAGS += -Werror -Wall -Wextra -pedantic
+        QMAKE_CXXFLAGS += -Wall -Wextra -pedantic
     } else {
         CONFIG += warn_on
         #disable the deprecated warnings that make writing standards-compliant code impossible
         QMAKE_CXXFLAGS += -wd4996
         DEFINES += NOMINMAX
     }
-    INCLUDEPATH += include C:\\Boost\\include\\boost-1_52 openALsoft/include
+    INCLUDEPATH += include C:\\boost
 }
 
 unix:!macx {

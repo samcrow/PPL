@@ -26,6 +26,7 @@
 // either expressed or implied, of the FreeBSD Project.
 
 #include "airportreader.h"
+#include <limits>
 #include <cassert>
 #include <cctype>
 

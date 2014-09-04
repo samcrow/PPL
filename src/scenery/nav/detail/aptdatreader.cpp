@@ -27,6 +27,7 @@
 
 #include "aptdatreader.h"
 #include <sstream>
+#include <limits>
 #include <iostream>
 
 namespace PPLNAMESPACE {
