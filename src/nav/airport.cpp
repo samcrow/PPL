@@ -35,9 +35,9 @@ namespace PPLNAMESPACE {
 std::unique_ptr<detail::AptDatCache> Airport::cache_;
 
 Airport::Airport(const std::string& code) :
-    code_(code),
-    navRef_(findNavRef())
+    code_(code)
 {
+    navRef_ = findNavRef();
     if(navRef_ == XPLM_NAV_NOT_FOUND) {
         throw std::invalid_argument("No airport with the requested ID was found");
     }
@@ -55,7 +55,7 @@ Airport::Airport(const std::string& code) :
             cache().startFindingAllAirports();
         }
     }
-    catch (...) { }
+    catch (std::exception& ex) { std::cerr << "Failed to start finding all airports: " << ex.what() << std::endl; }
 }
 
 std::string Airport::name() const {
@@ -70,53 +70,53 @@ float Airport::elevation() const {
     return elevation_;
 }
 
-bool Airport::hasRunways() const {
+bool Airport::hasRunways() {
+    if(!runways_.known()) {
+        // Check
+        if(cache().hasAirportCached(code_)) {
+            copyDataFromCache();
+        }
+    }
     return runways_.known();
 }
 
-bool Airport::hasFrequencies() const {
+bool Airport::hasFrequencies() {
+    if(!frequencies_.known()) {
+        // Check
+        if(cache().hasAirportCached(code_)) {
+            copyDataFromCache();
+        }
+    }
     return frequencies_.known();
 }
 
-bool Airport::hasType() const {
+bool Airport::hasType() {
+    if(!type_.known()) {
+        // Check
+        if(cache().hasAirportCached(code_)) {
+            copyDataFromCache();
+        }
+    }
     return type_.known();
 }
 
 const Airport::runway_list_type& Airport::runways() {
     if(!hasRunways()) {
-        // Check for runways again
-        if(cache().hasAirportCached(code_)) {
-            copyDataFromCache();
-        }
-        else {
-            throw std::runtime_error("runways() cannot be called when hasRunways() has returned false");
-        }
+        throw std::runtime_error("runways() cannot be called when hasRunways() has returned false");
     }
     return runways_.value();
 }
 
 const Airport::frequency_list_type& Airport::frequencies() {
     if(!hasFrequencies()) {
-        // Check for frequencies again
-        if(cache().hasAirportCached(code_)) {
-            copyDataFromCache();
-        }
-        else {
-            throw std::runtime_error("frequencies() cannot be called when hasFrequencies() has returned false");
-        }
+        throw std::runtime_error("frequencies() cannot be called when hasFrequencies() has returned false");
     }
     return frequencies_.value();
 }
 
 Airport::Type Airport::type() {
     if(!hasType()) {
-        // Check for the type again
-        if(cache().hasAirportCached(code_)) {
-            copyDataFromCache();
-        }
-        else {
-            throw std::runtime_error("type() cannot be called when hasType() has returned false");
-        }
+        throw std::runtime_error("type() cannot be called when hasType() has returned false");
     }
     return type_.value();
 }
