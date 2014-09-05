@@ -53,6 +53,10 @@ public:
         Departure = 57,
     };
     
+    /// The type used to store a frequency in hertz
+    // For some reason Frequency::hertz_type is not found here.
+    typedef std::int32_t hertz_type;
+    
     /**
      * @brief Default constructor.
      * 

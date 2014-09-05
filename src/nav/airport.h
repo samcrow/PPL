@@ -77,13 +77,13 @@ public:
     
     // Next: Accessors for information from the airport data file
     
-    bool hasRunways() const;
+    bool hasRunways();
     const runway_list_type& runways();
     
-    bool hasFrequencies() const;
+    bool hasFrequencies();
     const frequency_list_type& frequencies();
     
-    bool hasType() const;
+    bool hasType();
     Type type();
     
 protected:

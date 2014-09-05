@@ -30,7 +30,6 @@
 #include <fstream>
 #include <unordered_map>
 #include <functional>
-#include <future>
 #include <atomic>
 #include "../exceptions.h"
 #include "../../namespaces.h"
