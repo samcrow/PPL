@@ -27,6 +27,7 @@
 
 #include "airport.h"
 #include <stdexcept>
+#include <iostream>
 #include "../pluginpath.h"
 #include "detail/airportreader.h"
 
