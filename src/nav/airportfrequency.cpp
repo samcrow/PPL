@@ -1,4 +1,4 @@
-// Copyright (c) 2013, Philipp Muenzel mail@philippmuenzel.de
+// Copyright (c) 2014, Sam Crow samcrow@uw.edu
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,66 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "smoothed.h"
+#include "airportfrequency.h"
 
+namespace PPLNAMESPACE {
 
+AirportFrequency::AirportFrequency(Type type) :
+    Frequency(),
+    type_(type)
+{
+}
+
+AirportFrequency::AirportFrequency(hertz_type hertz, Type type) :
+    Frequency(hertz),
+    type_(type)
+{
+}
+
+AirportFrequency::AirportFrequency(float megahertz, Type type) :
+    Frequency(megahertz),
+    type_(type)
+{
+}
+
+AirportFrequency::AirportFrequency(hertz_type hertz, Type type, const std::string& name) :
+    Frequency(hertz),
+    type_(type),
+    name_(name)
+{
+}
+AirportFrequency::AirportFrequency(float megahertz, Type type, const std::string& name) :
+    Frequency(megahertz),
+    type_(type),
+    name_(name)
+{
+}
+AirportFrequency::AirportFrequency(const std::string& megahertz, Type type, const std::string& name) :
+    Frequency(megahertz),
+    type_(type),
+    name_(name)
+{
+}
+
+AirportFrequency::Type AirportFrequency::type() const {
+    return type_;
+}
+
+std::string AirportFrequency::name() const {
+    return name_;
+}
+
+void AirportFrequency::setType(Type newType) {
+    type_ = newType;
+}
+
+void AirportFrequency::setName(const std::string &newName) {
+    name_ = newName;
+}
+
+std::ostream& operator << (std::ostream& stream, const AirportFrequency& frequency) {
+    stream << "Frequency " << frequency.toMhzString() << ", type " << frequency.type() << ": " << frequency.name();
+    return stream;
+}
+
+}

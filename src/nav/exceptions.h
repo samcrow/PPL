@@ -25,62 +25,42 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "pathcomponent.h"
+#ifndef PPL_EXCEPTIONS_H
+#define PPL_EXCEPTIONS_H
 #include <stdexcept>
-#include <cctype>
-#include <stdexcept>
+#include "../namespaces.h"
 
 namespace PPLNAMESPACE {
 
-PathComponent::PathComponent(std::string raw) :
-    raw_(raw),
-    sanitized_(sanitize(raw))
-{
-}
 
-PathComponent::PathComponent(std::string raw, std::string sanitized) :
-    raw_(raw),
-    sanitized_(sanitized)
-{
-    if(!isValidComponent(sanitized)) {
-        throw std::invalid_argument("PathComponent: Provided sanitized string is not a valid component");
-    }
-}
+/**
+ * @brief Superclass for exceptions thrown from failed airport searches
+ */
+class AirportSearchException : public std::runtime_error {
+public:
+    AirportSearchException(const std::string& what_arg) : std::runtime_error(what_arg) {}
+    AirportSearchException(const char* what_arg) : std::runtime_error(what_arg) {}
+};
+/**
+ * @brief An exception thrown when a search was perfomed for an airport
+ * that does not exist
+ */
+class NoSuchAirportException : public AirportSearchException {
+public:
+    NoSuchAirportException(const std::string& what_arg) : AirportSearchException(what_arg) {}
+    NoSuchAirportException(const char* what_arg) : AirportSearchException(what_arg) {}
+};
 
-std::string PathComponent::sanitized() const
-{
-    return sanitized_;
-}
-
-std::string PathComponent::sanitize(const std::string &raw) {
-    
-    std::string sanitized;
-    sanitized.reserve(raw.length());
-    
-    // 1: Replace uppercase letters with lowercase letters
-    for(const char character : raw) {
-        if(std::isupper(character)) {
-            sanitized.push_back(char(std::tolower(character)));
-        }
-        else {
-            sanitized.push_back(char(character));
-        }
-    }
-    
-    // 2: Collapse spaces and dashes into underscores
-    const std::regex spaceCollapsor("[\\s-]+");
-    sanitized = std::regex_replace(sanitized, spaceCollapsor, std::string("_"));
-    
-    // 3: Remove any other characters
-    const std::regex otherChars("[^a-zA-Z0-9_]+");
-    sanitized = std::regex_replace(sanitized, otherChars, std::string(""));
-    
-    return sanitized;
-}
-
-bool PathComponent::isValidComponent(const std::string& component) {
-    const std::regex validator("^[a-zA-Z0-9_]+$");
-    return std::regex_match(component, validator);
-}
+/**
+ * @brief An exception thrown when a search was performed for an airport that may exist,
+ * but the airport data file is still being parsed
+ */
+class ReadInProgressException : public AirportSearchException {
+public:
+    ReadInProgressException(const std::string& what_arg) : AirportSearchException(what_arg) {}
+    ReadInProgressException(const char* what_arg) : AirportSearchException(what_arg) {}
+};
 
 }
+
+#endif // PPL_EXCEPTIONS_H

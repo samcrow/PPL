@@ -25,57 +25,74 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#ifndef VARADICCOMPILER_H
-#define VARADICCOMPILER_H
+#ifndef AIRPORTFREQUENCY_H
+#define AIRPORTFREQUENCY_H
+
 #include "../namespaces.h"
-#include <array>
+#include "frequency.h"
+#include <ostream>
 
 namespace PPLNAMESPACE {
 
 /**
- * @brief Provides a method that compiles
- * varadic arguments into a list
+ * @brief A type of frequency that includes a name and a type identifying its
+ * use at an airport
  */
-class VaradicCompiler
+class AirportFrequency : public Frequency
 {
 public:
     
+    // Types of frequencies
+    enum Type {
+        Recorded = 50,
+        Unicom = 51,
+        ClearanceDelivery = 52,
+        Ground = 53,
+        Tower = 54,
+        Approach = 56,
+        Departure = 57,
+    };
+    
+    /// The type used to store a frequency in hertz
+    // For some reason Frequency::hertz_type is not found here.
+    typedef std::int32_t hertz_type;
+    
     /**
-     * Returns an array of objects containing the provided varadic arguments.
-     * Each argument after the first argument must be implicitly convertible to the
-     * type of the first argument.
+     * @brief Default constructor.
+     * 
+     * The frequency will be set to zero.
      */
-    template < typename T, typename... As >
-    static std::array< T, 1 + sizeof...(As) > compile(T first, As... others) {
-        // Create an array
-        std::array< T, 1 + sizeof...(As) > vector;
-        // Create another array from the compilation of the others
-        const std::array< T, sizeof...(As) > supplement = compile(others...);
-        
-        // Put item 0 in the array
-        vector[0] = first;
-        // Copy other items starting at index 1
-        typename std::array< T, 1 + sizeof...(As) >::iterator item1 = vector.begin();
-        std::advance(item1, 1);
-        std::copy(supplement.begin(), supplement.end(), item1);
-        
-        return vector;
-    }
+    AirportFrequency(Type type);
     
-    template < typename T >
-    static std::array<T, 1> compile(T arg) {
-        std::array<T, 1> vector;
-        vector[0] = arg;
-        return vector;
-    }
+    AirportFrequency(hertz_type hertz, Type type);
     
-    template < typename T >
-    static std::array<T, 0> compile() {
-        return std::array<T, 0>();
-    }
+    AirportFrequency(float megahertz, Type type);
     
-    VaradicCompiler() = delete;
+    AirportFrequency(hertz_type hertz, Type type, const std::string& name = std::string());
+    
+    AirportFrequency(float megahertz, Type type, const std::string& name = std::string());
+    
+    /**
+     * @brief Parses a string representation of a number of megahertz
+     * @param megahertz
+     */
+    AirportFrequency(const std::string& megahertz, Type type, const std::string& name = std::string());
+    
+    Type type() const;
+    std::string name() const;
+    
+    void setType(Type newType);
+    void setName(const std::string& newName);
+    
+    friend std::ostream& operator << (std::ostream& stream, const AirportFrequency& frequency);
+    
+private:
+    
+    Type type_;
+    std::string name_;
+    
 };
 
 }
-#endif // VARADICCOMPILER_H
+
+#endif // AIRPORTFREQUENCY_H

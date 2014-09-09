@@ -42,14 +42,14 @@ macx {
 win32 {
     DEFINES += APL=0 IBM=1 LIN=0
     !win32-msvc2008:!win32-msvc2010 {
-        QMAKE_CXXFLAGS += -Werror -Wall -Wextra -pedantic
+        QMAKE_CXXFLAGS += -Wall -Wextra -pedantic
     } else {
         CONFIG += warn_on
         #disable the deprecated warnings that make writing standards-compliant code impossible
         QMAKE_CXXFLAGS += -wd4996
         DEFINES += NOMINMAX
     }
-    INCLUDEPATH += include C:\\Boost\\include\\boost-1_52 openALsoft/include
+    INCLUDEPATH += include C:\\boost
 }
 
 unix:!macx {
@@ -89,7 +89,6 @@ HEADERS += \
     src/signalcommand.h \
     src/imageio/bitmapio.h \
     src/imageio/imagedata.h \
-    src/imageio/pngio.h \
     src/imageio/targaio.h \
     src/mvc/controller.h \
     src/mvc/view.h \
@@ -111,7 +110,20 @@ HEADERS += \
     src/ui/cursor.h \
     src/ui/cursortype.h \
     src/scenery/probe.h \
-    src/scenery/proberesult.h
+    src/scenery/proberesult.h \
+    src/periodicaction.h \
+    src/nav/airport.h \
+    src/util/uncertain.h \
+    src/nav/detail/airportreader.h \
+    src/nav/detail/aptdatreader.h \
+    src/nav/detail/aptdatcache.h \
+    src/nav/airportfrequency.h \
+    src/nav/exceptions.h \
+    src/nav/frequency.h \
+    src/nav/runway.h \
+    src/util/concurrentmap.h \
+    src/nav/latlon.h \
+    src/nav/navaid.h
 
 SOURCES += \
     src/pluginpath.cpp \
@@ -126,13 +138,11 @@ SOURCES += \
     src/log.cpp \
     src/logwriter.cpp \
     src/menuitem.cpp \
-    src/smoothed.cpp \
     src/processor.cpp \
     src/vertexbuffer.cpp \
     src/command.cpp \
     src/signalcommand.cpp \
     src/imageio/bitmapio.cpp \
-    src/imageio/pngio.cpp \
     src/imageio/targaio.cpp \
     src/mvc/view/clickregion/clickregion.cpp \
     src/mvc/view/advancedoverlaygauge.cpp \
@@ -147,7 +157,18 @@ SOURCES += \
     src/ui/cursormanager.cpp \
     src/ui/cursor.cpp \
     src/scenery/probe.cpp \
-    src/scenery/proberesult.cpp
+    src/scenery/proberesult.cpp \
+    src/periodicaction.cpp \
+    src/nav/airport.cpp \
+    src/nav/detail/airportreader.cpp \
+    src/nav/detail/aptdatreader.cpp \
+    src/nav/detail/aptdatcache.cpp \
+    src/nav/airportfrequency.cpp \
+    src/nav/frequency.cpp \
+    src/nav/runway.cpp \
+    src/nav/latlon.cpp \
+    src/nav/navaid.cpp
+
 
 withsound {
     HEADERS += \
@@ -189,6 +210,19 @@ withserialization {
     HEADERS += src/sharedobject.h
     SOURCES += src/sharedobject.cpp
 
+}
+
+# Configuration option adds support for PNG files
+withpng {
+    DEFINES += PPL_ENABLE_PNG
+    HEADERS += src/imageio/pngio.h
+    SOURCES += src/imageio/pngio.cpp
+
+    # libpng
+    macx {
+        INCLUDEPATH += /opt/local/include
+        LIBS += -L/opt/local/lib/libpng-static -lpng
+    }
 }
 
 # Boost Signals2

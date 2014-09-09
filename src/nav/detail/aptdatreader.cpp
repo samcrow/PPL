@@ -25,62 +25,83 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "pathcomponent.h"
-#include <stdexcept>
-#include <cctype>
-#include <stdexcept>
+#include "aptdatreader.h"
+#include <sstream>
+#include <limits>
+#include <iostream>
 
 namespace PPLNAMESPACE {
+namespace detail {
 
-PathComponent::PathComponent(std::string raw) :
-    raw_(raw),
-    sanitized_(sanitize(raw))
+AptDatReader::AptDatReader(const std::string& filePath) :
+    filePath(filePath)
 {
+    readInProgress_.store(false);
 }
 
-PathComponent::PathComponent(std::string raw, std::string sanitized) :
-    raw_(raw),
-    sanitized_(sanitized)
-{
-    if(!isValidComponent(sanitized)) {
-        throw std::invalid_argument("PathComponent: Provided sanitized string is not a valid component");
-    }
+
+const std::string& AptDatReader::path() const {
+    return filePath;
 }
 
-std::string PathComponent::sanitized() const
-{
-    return sanitized_;
+bool AptDatReader::allAirportsRead() const {
+    return allAirportsRead_;
 }
 
-std::string PathComponent::sanitize(const std::string &raw) {
-    
-    std::string sanitized;
-    sanitized.reserve(raw.length());
-    
-    // 1: Replace uppercase letters with lowercase letters
-    for(const char character : raw) {
-        if(std::isupper(character)) {
-            sanitized.push_back(char(std::tolower(character)));
-        }
-        else {
-            sanitized.push_back(char(character));
+bool AptDatReader::readInProgress() const {
+    return readInProgress_.load();
+}
+
+void AptDatReader::ensureOpen() {
+    if(!stream.is_open()) {
+        stream.open(filePath, std::ios::in);
+        if(stream.rdstate() & std::ios::failbit) {
+            throw std::runtime_error("Could not open apt.dat file");
         }
     }
-    
-    // 2: Collapse spaces and dashes into underscores
-    const std::regex spaceCollapsor("[\\s-]+");
-    sanitized = std::regex_replace(sanitized, spaceCollapsor, std::string("_"));
-    
-    // 3: Remove any other characters
-    const std::regex otherChars("[^a-zA-Z0-9_]+");
-    sanitized = std::regex_replace(sanitized, otherChars, std::string(""));
-    
-    return sanitized;
 }
 
-bool PathComponent::isValidComponent(const std::string& component) {
-    const std::regex validator("^[a-zA-Z0-9_]+$");
-    return std::regex_match(component, validator);
+void AptDatReader::moveToBeginning() {
+    // Dismiss errors
+    stream.clear();
+    stream.seekg(0);
+    
+    skipLine();
+    skipLine();
 }
 
+
+void AptDatReader::skipLine() {
+    stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+std::string AptDatReader::readLine() {
+    const auto readMoreLineTerminators = [this] {
+        while(true) {
+            char c = stream.peek();
+            if(c == '\n' || c == '\r') {
+                // Read and ignore that character
+                stream.get();
+            }
+            else {
+                break;
+            }
+        }
+    };
+    
+    std::string line;
+    while(!stream.eof()) {
+        stream.clear();
+        char c = stream.get();
+        if(c == '\n' || c == '\r') {
+            readMoreLineTerminators();
+            break;
+        }
+        line.push_back(c);
+    }
+    stream.clear();
+    return line;
+}
+
+}
 }

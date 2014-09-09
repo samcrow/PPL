@@ -25,62 +25,34 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "pathcomponent.h"
-#include <stdexcept>
-#include <cctype>
-#include <stdexcept>
+#include "runway.h"
+#include "latlon.h"
 
 namespace PPLNAMESPACE {
 
-PathComponent::PathComponent(std::string raw) :
-    raw_(raw),
-    sanitized_(sanitize(raw))
-{
+
+std::string Runway::name() const {
+    return end1_.name() + '/' + end2_.name();
 }
 
-PathComponent::PathComponent(std::string raw, std::string sanitized) :
-    raw_(raw),
-    sanitized_(sanitized)
-{
-    if(!isValidComponent(sanitized)) {
-        throw std::invalid_argument("PathComponent: Provided sanitized string is not a valid component");
+std::string Runway::name() {
+    if(!name_.known()) {
+        // call the const version of this function
+        name_ = static_cast<const Runway*>(this)->name();
     }
+    return name_.value();
 }
 
-std::string PathComponent::sanitized() const
-{
-    return sanitized_;
+double Runway::length() const {
+    return LatLon::distance(LatLon(end1_.latitude(), end1_.longitude()), LatLon(end2_.latitude(), end2_.longitude()));
 }
 
-std::string PathComponent::sanitize(const std::string &raw) {
-    
-    std::string sanitized;
-    sanitized.reserve(raw.length());
-    
-    // 1: Replace uppercase letters with lowercase letters
-    for(const char character : raw) {
-        if(std::isupper(character)) {
-            sanitized.push_back(char(std::tolower(character)));
-        }
-        else {
-            sanitized.push_back(char(character));
-        }
+double Runway::length() {
+    if(!length_.known()) {
+        // Call the const version
+        length_ = static_cast<const Runway*>(this)->length();
     }
-    
-    // 2: Collapse spaces and dashes into underscores
-    const std::regex spaceCollapsor("[\\s-]+");
-    sanitized = std::regex_replace(sanitized, spaceCollapsor, std::string("_"));
-    
-    // 3: Remove any other characters
-    const std::regex otherChars("[^a-zA-Z0-9_]+");
-    sanitized = std::regex_replace(sanitized, otherChars, std::string(""));
-    
-    return sanitized;
-}
-
-bool PathComponent::isValidComponent(const std::string& component) {
-    const std::regex validator("^[a-zA-Z0-9_]+$");
-    return std::regex_match(component, validator);
+    return length_.value();
 }
 
 }

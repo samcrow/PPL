@@ -39,6 +39,11 @@
 #include <Windows.h>
 #include <gl\gl.h>
 #include <gl\glu.h>
+// Fix for old OpenGL version on Windows
+#ifndef GL_CLAMP_TO_EDGE
+#define GL_CLAMP_TO_EDGE 0x812F
+#endif
+
 #elif LIN
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -54,7 +59,9 @@
 
 #include "imageio/targaio.h"
 #include "imageio/bitmapio.h"
+#ifdef PPL_ENABLE_PNG
 #include "imageio/pngio.h"
+#endif
 
 using namespace PPLNAMESPACE;
 
@@ -86,6 +93,7 @@ Texture::Texture(const std::string& file_name)
         
         
     }
+#ifdef PPL_ENABLE_PNG
     // PNG
     else if (file_name.rfind(".png") != std::string::npos) {
         GLuint type;
@@ -103,7 +111,9 @@ Texture::Texture(const std::string& file_name)
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
         
-    } else if (file_name.rfind(".tga") != std::string::npos)
+    }
+#endif
+    else if (file_name.rfind(".tga") != std::string::npos)
     {
         GLuint type;
         
