@@ -1,1 +1,4 @@
-The Plugin Patterns Library provides classes for common tasks with the XPLM SDK for the X-Plane flight simulator. It is provided under BSD license. Questions, support and pull request are handled through http://forums.x-plane.org/index.php?showtopic=49958 
+The Plugin Patterns Library provides classes for common tasks with the XPLM SDK for the X-Plane flight simulator. It is provided under BSD license. Questions, support and pull request are handled through http://forums.x-plane.org/index.php?showtopic=49958
+
+This fork adds a model-view-controller framework and other additional features.
+
