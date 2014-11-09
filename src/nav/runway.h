@@ -105,6 +105,21 @@ public:
             Omnidirectional = 1,
             Unidirectional = 2,
         };
+
+        End() :
+            // Defaults
+            heading_(0),
+            suffix_(Suffix::None),
+            latitude_(0),
+            longitude_(0),
+            displacedThresholdLength_(0),
+            blastPadLength_(0),
+            approachLighting_(ApproachLighting::None),
+            touchdownZoneLighting_(false),
+            reil_(RunwayEndIdentifierLights::None)
+        {
+
+        }
         
         /// Returns the 2-digit heading
         int heading() const {
@@ -164,9 +179,12 @@ public:
         
         void setHeading(int newHeading) {
             heading_ = newHeading;
+            name_.question();
         }
         void setSuffix(Suffix newSuffix) {
             suffix_ = newSuffix;
+            name_.question();
+
         }
         void setLatitude(double newLatitude) {
             latitude_ = newLatitude;
@@ -195,7 +213,7 @@ public:
         /// The two-digit heading
         int heading_;
         /// The suffix
-        Suffix suffix_ = Suffix::None;
+        Suffix suffix_;
         
         uncertain<std::string> name_;
         
@@ -208,6 +226,9 @@ public:
         RunwayEndIdentifierLights reil_;
     };
     
+
+
+    Runway();
     
     const End& end1() const {
         return end1_;

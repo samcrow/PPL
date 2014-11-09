@@ -25,47 +25,66 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "runway.h"
-#include "latlon.h"
+#include "startlocation.h"
 
 namespace PPLNAMESPACE {
 
-Runway::Runway() :
+StartLocation::StartLocation() :
     // Defaults
-    markings_(Markings::None),
-    surface_(Surface::Asphalt),
-    shoulder_(Shoulder::None),
-    roughness_(0),
-    width_(1),
-    hasCenterlineLights_(false),
-    edgeLights_(EdgeLights::None),
-    hasGeneratedDistanceSigns_(false)
+    heading_(0),
+    type_(Type::Miscellaneous),
+    // Not suitable for any aircraft
+    types_({ false, false, false, false, false })
 {
-
 }
 
-std::string Runway::name() const {
-    return end1_.name() + '/' + end2_.name();
+const std::string& StartLocation::name() const {
+    return name_;
+}
+void StartLocation::setName(const std::string& newName) {
+    name_ = newName;
+}
+void StartLocation::setName(std::string&& newName) {
+    name_ = newName;
 }
 
-std::string Runway::name() {
-    if(!name_.known()) {
-        // call the const version of this function
-        name_ = static_cast<const Runway*>(this)->name();
+double StartLocation::heading() const {
+    return heading_;
+}
+void StartLocation::setHeading(double newHeading) {
+    heading_ = newHeading;
+}
+StartLocation::Type StartLocation::type() const {
+    return type_;
+}
+void StartLocation::setType(Type newType) {
+    type_ = newType;
+}
+
+const StartLocation::AircraftTypes& StartLocation::aircraftTypes() const {
+    return types_;
+}
+void StartLocation::setAircraftTypes(const AircraftTypes& newTypes) {
+    types_ = newTypes;
+}
+void StartLocation::setAircraftTypes(AircraftTypes&& newTypes) {
+    types_ = newTypes;
+}
+
+StartLocation::Type StartLocation::stringToType(const std::string& string) {
+    if(string == "gate") {
+        return Type::Gate;
     }
-    return name_.value();
-}
-
-double Runway::length() const {
-    return LatLon::distance(LatLon(end1_.latitude(), end1_.longitude()), LatLon(end2_.latitude(), end2_.longitude()));
-}
-
-double Runway::length() {
-    if(!length_.known()) {
-        // Call the const version
-        length_ = static_cast<const Runway*>(this)->length();
+    if(string == "hangar") {
+        return Type::Hangar;
     }
-    return length_.value();
+    if(string == "misc") {
+        return Type::Miscellaneous;
+    }
+    if(string == "tie-down") {
+        return Type::TieDown;
+    }
+    throw std::out_of_range("No type for the provided string");
 }
 
 }

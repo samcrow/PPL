@@ -102,6 +102,12 @@ public:
     void affirm() {
         known_ = true;
     }
+    /**
+     * @brief Sets this object to have an unknown value
+     */
+    void question() {
+        known_ = false;
+    }
     
     /**
      * @brief Returns the value stored in this object

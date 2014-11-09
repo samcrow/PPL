@@ -5,6 +5,7 @@ QT -= gui core
 
 CONFIG += static exceptions stl console static c++11
 CONFIG -= thread qt rtti warn_on
+QMAKE_MAC_SDK = macosx
 
 VERSION = 1.0.0
 
@@ -124,7 +125,9 @@ HEADERS += \
     src/util/concurrentmap.h \
     src/nav/latlon.h \
     src/nav/navaid.h \
-    src/util/differentiator.h
+    src/util/differentiator.h \
+    src/nav/helipad.h \
+    src/nav/startlocation.h
 
 SOURCES += \
     src/pluginpath.cpp \
@@ -169,7 +172,9 @@ SOURCES += \
     src/nav/runway.cpp \
     src/nav/latlon.cpp \
     src/nav/navaid.cpp \
-    src/util/differentiator.cpp
+    src/util/differentiator.cpp \
+    src/nav/helipad.cpp \
+    src/nav/startlocation.cpp
 
 
 withsound {

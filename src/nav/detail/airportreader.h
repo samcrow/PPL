@@ -30,6 +30,8 @@
 #include "../../namespaces.h"
 #include "../../util/uncertain.h"
 #include "../runway.h"
+#include "../helipad.h"
+#include "../startlocation.h"
 #include "../airportfrequency.h"
 #include <fstream>
 #include <vector>
@@ -45,7 +47,9 @@ class AirportReader
 public:
     
     typedef std::vector< Runway > runway_list_type;
+    typedef std::vector< Helipad > helipad_list_type;
     typedef std::vector< AirportFrequency > frequency_list_type;
+    typedef std::vector< StartLocation > start_location_list_type;
     
     enum class AirportType {
         LandAirport = 1,
@@ -73,6 +77,8 @@ public:
      * @return 
      */
     const runway_list_type& runways();
+
+    const helipad_list_type& helipads();
     
     /**
      * @brief Returns a reference to a list of radio frequencies associated
@@ -80,6 +86,8 @@ public:
      * @return 
      */
     const frequency_list_type& frequencies();
+
+    const start_location_list_type& startLocations();
     
 private:
     
@@ -98,19 +106,31 @@ private:
     
     /// Runways
     uncertain< runway_list_type > runways_;
+
+    uncertain< helipad_list_type > helipads_;
     
     /// Frequencies
-    uncertain< frequency_list_type> frequencies_;
+    uncertain< frequency_list_type > frequencies_;
+
+    uncertain< start_location_list_type > startLocations_;
     
     void readFirstLine();
     
     void readRunways();
+
+    void readHelipads();
     
     void readFrequencies();
+
+    void readStartLocations();
     
     void moveToBeginning();
     
     void skipLine();
+
+    /// Reads from the stream until the end of the line
+    /// and stores the text read in the parameter out
+    void readUntilLineEnd(std::string& out);
 };
 
 

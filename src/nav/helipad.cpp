@@ -25,47 +25,70 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "runway.h"
-#include "latlon.h"
+#include "helipad.h"
 
 namespace PPLNAMESPACE {
 
-Runway::Runway() :
-    // Defaults
-    markings_(Markings::None),
+// Set up defaults
+Helipad::Helipad() :
+    heading_(0),
+    length_(1),
+    width_(1),
     surface_(Surface::Asphalt),
     shoulder_(Shoulder::None),
     roughness_(0),
-    width_(1),
-    hasCenterlineLights_(false),
-    edgeLights_(EdgeLights::None),
-    hasGeneratedDistanceSigns_(false)
+    hasEdgeLights_(false)
 {
-
 }
 
-std::string Runway::name() const {
-    return end1_.name() + '/' + end2_.name();
+std::string Helipad::name() const {
+    return name_;
+}
+void Helipad::setName(const std::string& newName) {
+    name_ = newName;
 }
 
-std::string Runway::name() {
-    if(!name_.known()) {
-        // call the const version of this function
-        name_ = static_cast<const Runway*>(this)->name();
-    }
-    return name_.value();
+double Helipad::heading() const {
+    return heading_;
 }
-
-double Runway::length() const {
-    return LatLon::distance(LatLon(end1_.latitude(), end1_.longitude()), LatLon(end2_.latitude(), end2_.longitude()));
+void Helipad::setHeading(double newHeading) {
+    heading_ = newHeading;
 }
-
-double Runway::length() {
-    if(!length_.known()) {
-        // Call the const version
-        length_ = static_cast<const Runway*>(this)->length();
-    }
-    return length_.value();
+double Helipad::length() const {
+    return length_;
+}
+void Helipad::setLength(double newLength) {
+    length_ = newLength;
+}
+double Helipad::width() const {
+    return width_;
+}
+void Helipad::setWidth(double newWidth) {
+    width_ = newWidth;
+}
+Helipad::Surface Helipad::surface() const {
+    return surface_;
+}
+void Helipad::setSurface(Surface newSurface) {
+    surface_ = newSurface;
+}
+Helipad::Shoulder Helipad::shoulder() const {
+    return shoulder_;
+}
+void Helipad::setShoulder(Shoulder newShoulder) {
+    shoulder_ = newShoulder;
+}
+float Helipad::roughness() const {
+    return roughness_;
+}
+void Helipad::setRoughness(float newRoughness) {
+    roughness_ = newRoughness;
+}
+bool Helipad::hasEdgeLights() const {
+    return hasEdgeLights_;
+}
+void Helipad::setEdgeLights(bool newHasEdgeLights) {
+    hasEdgeLights_ = newHasEdgeLights;
 }
 
 }

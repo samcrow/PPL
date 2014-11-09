@@ -25,47 +25,65 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "runway.h"
-#include "latlon.h"
+#ifndef STARTLOCATION_H
+#define STARTLOCATION_H
+#include "navaid.h"
 
 namespace PPLNAMESPACE {
 
-Runway::Runway() :
-    // Defaults
-    markings_(Markings::None),
-    surface_(Surface::Asphalt),
-    shoulder_(Shoulder::None),
-    roughness_(0),
-    width_(1),
-    hasCenterlineLights_(false),
-    edgeLights_(EdgeLights::None),
-    hasGeneratedDistanceSigns_(false)
+/// Represents a startup location at an airport
+class StartLocation : public Navaid
 {
+public:
+
+    /// Location types
+    enum class Type {
+        Gate,
+        Hangar,
+        Miscellaneous,
+        TieDown,
+    };
+
+    /// Types of aircraft that should use this location
+    struct AircraftTypes {
+        /// If this location is suitable for helicopters
+        bool helicopters;
+        /// If this location is suitable for piston-engined propeller aircraft
+        bool props;
+        /// If this location is suitable for turboprop aircraft
+        bool turboprops;
+        /// If this location is suitable for jet aircraft
+        bool jets;
+        /// If this location is suitable for heavy jet aircraft
+        bool heavyJets;
+    };
+
+    StartLocation();
+
+    // Pull Navaid::setPosition in as a public function of this class
+    using Navaid::setPosition;
+
+    const std::string& name() const;
+    void setName(const std::string& newName);
+    void setName(std::string&& newName);
+    double heading() const;
+    void setHeading(double newHeading);
+    Type type() const;
+    void setType(Type newType);
+    const AircraftTypes& aircraftTypes() const;
+    void setAircraftTypes(const AircraftTypes& newTypes);
+    void setAircraftTypes(AircraftTypes&& newTypes);
+
+    /// Converts a type string to a type.
+    /// @throws std::out_of_range if no matching type exists
+    static Type stringToType(const std::string& string);
+
+private:
+    std::string name_;
+    double heading_;
+    Type type_;
+    AircraftTypes types_;
+};
 
 }
-
-std::string Runway::name() const {
-    return end1_.name() + '/' + end2_.name();
-}
-
-std::string Runway::name() {
-    if(!name_.known()) {
-        // call the const version of this function
-        name_ = static_cast<const Runway*>(this)->name();
-    }
-    return name_.value();
-}
-
-double Runway::length() const {
-    return LatLon::distance(LatLon(end1_.latitude(), end1_.longitude()), LatLon(end2_.latitude(), end2_.longitude()));
-}
-
-double Runway::length() {
-    if(!length_.known()) {
-        // Call the const version
-        length_ = static_cast<const Runway*>(this)->length();
-    }
-    return length_.value();
-}
-
-}
+#endif // STARTLOCATION_H

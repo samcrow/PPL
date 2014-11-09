@@ -29,6 +29,7 @@
 #include <limits>
 #include <cassert>
 #include <cctype>
+#include <boost/algorithm/string.hpp>
 
 namespace PPLNAMESPACE {
 namespace detail {
@@ -81,12 +82,28 @@ const AirportReader::runway_list_type& AirportReader::runways() {
     return runways_.value();
 }
 
+const AirportReader::helipad_list_type& AirportReader::helipads() {
+    if(!helipads_.known()) {
+        readHelipads();
+        assert(helipads_.known());
+    }
+    return helipads_.value();
+}
+
 const AirportReader::frequency_list_type& AirportReader::frequencies() {
     if(!frequencies_.known()) {
         readFrequencies();
         assert(frequencies_.known());
     }
     return frequencies_.value();
+}
+
+const AirportReader::start_location_list_type& AirportReader::startLocations() {
+    if(!startLocations_.known()) {
+        readStartLocations();
+        assert(startLocations_.known());
+    }
+    return startLocations_.value();
 }
 
 void AirportReader::readFirstLine() {
@@ -157,8 +174,7 @@ void AirportReader::readRunways() {
         if(lineCode == 100) {
             // A runway
             Runway runway;
-            
-            // iter now points to the new Runway object
+
             float width;
             stream >> width;
             runway.setWidth(width);
@@ -273,6 +289,85 @@ void AirportReader::readRunways() {
     
 }
 
+void AirportReader::readHelipads() {
+    moveToBeginning();
+    helipads_.affirm();
+
+    // Skip past the first line, containing the airport code
+    int dummy;
+    stream >> dummy;
+    skipLine();
+
+    while(!stream.eof()) {
+
+        // Read a line code
+
+        int lineCode;
+        stream >> lineCode;
+
+        if(lineCode == 1 || lineCode == 16 || lineCode == 17 || stream.eof()) {
+            // Got to the next airport or the end of the file
+            return;
+        }
+        if(lineCode == 102) {
+            // A helipad
+            Helipad helipad;
+
+            std::string name;
+            stream >> name;
+            helipad.setName(name);
+
+            double latitude;
+            stream >> latitude;
+            double longitude;
+            stream >> longitude;
+            helipad.setPosition({ latitude, longitude });
+
+            double heading;
+            stream >> heading;
+            helipad.setHeading(heading);
+
+            double length;
+            stream >> length;
+            helipad.setLength(length);
+            double width;
+            stream >> width;
+            helipad.setWidth(width);
+
+            std::underlying_type<Helipad::Surface>::type surface;
+            stream >> surface;
+            helipad.setSurface( static_cast<Helipad::Surface>(surface) );
+
+            // Ignore markings
+            stream >> dummy;
+
+            std::underlying_type<Helipad::Shoulder>::type shoulder;
+            stream >> shoulder;
+            helipad.setShoulder( static_cast<Helipad::Shoulder>(shoulder) );
+
+            float roughness;
+            stream >> roughness;
+            helipad.setRoughness(roughness);
+
+            bool edgeLighting;
+            stream >> edgeLighting;
+            helipad.setEdgeLights(edgeLighting);
+
+            // Add runway to the list
+            helipads_.value().push_back(helipad);
+            // Done
+            skipLine();
+        }
+        else {
+            // Something other than a runway
+            skipLine();
+            continue;
+        }
+
+    }
+
+}
+
 void AirportReader::readFrequencies() {
     moveToBeginning();
     frequencies_.affirm();
@@ -337,11 +432,124 @@ void AirportReader::readFrequencies() {
             frequencies_.value().push_back(frequency);
         }
         else {
-            // Something other than a runway
+            // Something other than a frequency
             skipLine();
             continue;
         }
     }
+}
+
+void AirportReader::readStartLocations() {
+    moveToBeginning();
+    startLocations_.affirm();
+
+    // Skip past the first line, containing the airport code
+    int dummy;
+    stream >> dummy;
+    skipLine();
+
+    while(!stream.eof()) {
+        // Read a line code
+        int lineCode;
+        stream >> lineCode;
+
+        if(lineCode == 1 || lineCode == 16 || lineCode == 17 || stream.eof()) {
+            // Got to the next airport or the end of the file
+            return;
+        }
+        if(lineCode == 15) {
+            // Legacy start location line format
+            // Create and assign a start location
+            StartLocation location;
+            // Read lat/lon
+            double latitude;
+            stream >> latitude;
+            double longitude;
+            stream >> longitude;
+            location.setPosition({ latitude, longitude });
+
+            double heading;
+            stream >> heading;
+            location.setHeading(heading);
+
+            // Read name
+            std::string name;
+            readUntilLineEnd(name);
+            location.setName(name);
+
+            // Set defaults for other properties
+            location.setType(StartLocation::Type::Miscellaneous);
+            // Assume suitable for all aircraft
+            location.setAircraftTypes({ true, true, true, true, true });
+
+            startLocations_.value().push_back(location);
+        }
+        else if(lineCode == 1300)
+        {
+            // Create and assign a start location
+            StartLocation location;
+
+            // The specification says that there should be an active zone classification
+            // field here. However, no apt.dat file readily available on 2014-11-08
+            // had such a field. For now, consider it absent.
+
+            // Read lat/lon
+            double latitude;
+            stream >> latitude;
+            double longitude;
+            stream >> longitude;
+            location.setPosition({ latitude, longitude });
+
+            double heading;
+            stream >> heading;
+            location.setHeading(heading);
+
+            std::string typeString;
+            stream >> typeString;
+            location.setType(StartLocation::stringToType(typeString));
+
+            // Process aircraft types
+            StartLocation::AircraftTypes types { false, false, false, false, false };
+            std::string typesString;
+            stream >> typesString;
+
+            std::vector<std::string> components;
+            // Split between | (pipe) s
+            boost::split(components, typesString, [](char c) { return c == '|'; }, boost::token_compress_on);
+
+            // Look for each key
+            if(std::find(components.begin(), components.end(), "helos") != components.end()) {
+                types.helicopters = true;
+            }
+            if(std::find(components.begin(), components.end(), "props") != components.end()) {
+                types.props = true;
+            }
+            if(std::find(components.begin(), components.end(), "turboprops") != components.end()) {
+                types.turboprops = true;
+            }
+            if(std::find(components.begin(), components.end(), "jets") != components.end()) {
+                types.jets = true;
+            }
+            if(std::find(components.begin(), components.end(), "heavy") != components.end()) {
+                types.heavyJets = true;
+            }
+
+            location.setAircraftTypes(std::move(types));
+
+            // Read name
+            std::string name;
+            readUntilLineEnd(name);
+            location.setName(name);
+
+            startLocations_.value().push_back(location);
+        }
+        else {
+            // Something other than a start location
+            skipLine();
+            continue;
+        }
+    }
+
 }
 
 void AirportReader::moveToBeginning() {
@@ -351,6 +559,40 @@ void AirportReader::moveToBeginning() {
 
 void AirportReader::skipLine() {
     stream.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+void AirportReader::readUntilLineEnd(std::string& out) {
+    out.clear();
+    // Skip whitespace
+    while(!stream.eof()) {
+        const char c = stream.peek();
+        if(std::isblank(c)) {
+            // Read and ignore this character
+            stream.get();
+        }
+        else {
+            // Moved beyond whitespace
+            break;
+        }
+    }
+    // Read the rest of the line
+    while(!stream.eof()) {
+        const char c = stream.get();
+        if(c == '\r' || c == '\n') {
+            break;
+        }
+        out.append({ c });
+    }
+    // Read any more line separators that may exist
+    while(!stream.eof()) {
+        char c = stream.peek();
+        if(c == '\r' || c == '\n') {
+            stream.get();
+        }
+        else {
+            break;
+        }
+    }
 }
 
 }

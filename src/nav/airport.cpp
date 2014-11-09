@@ -81,8 +81,28 @@ bool Airport::hasRunways() {
     return runways_.known();
 }
 
+bool Airport::hasHelipads() {
+    if(!helipads_.known()) {
+        // Check
+        if(cache().hasAirportCached(code_)) {
+            copyDataFromCache();
+        }
+    }
+    return helipads_.known();
+}
+
 bool Airport::hasFrequencies() {
     if(!frequencies_.known()) {
+        // Check
+        if(cache().hasAirportCached(code_)) {
+            copyDataFromCache();
+        }
+    }
+    return frequencies_.known();
+}
+
+bool Airport::hasStartLocations() {
+    if(!startLocations_.known()) {
         // Check
         if(cache().hasAirportCached(code_)) {
             copyDataFromCache();
@@ -108,11 +128,25 @@ const Airport::runway_list_type& Airport::runways() {
     return runways_.value();
 }
 
+const Airport::helipad_list_type& Airport::helipads() {
+    if(!hasHelipads()) {
+        throw std::runtime_error("helipads() cannot be called when hasHelipads() has returned false");
+    }
+    return helipads_.value();
+}
+
 const Airport::frequency_list_type& Airport::frequencies() {
     if(!hasFrequencies()) {
         throw std::runtime_error("frequencies() cannot be called when hasFrequencies() has returned false");
     }
     return frequencies_.value();
+}
+
+const Airport::start_location_list_type& Airport::startLocations() {
+    if(!hasStartLocations()) {
+        throw std::runtime_error("startLocations() cannot be called when hasStartLocations() has returned false");
+    }
+    return startLocations_.value();
 }
 
 Airport::Type Airport::type() {
@@ -147,7 +181,9 @@ detail::AptDatCache& Airport::cache() {
 void Airport::copyDataFromCache() {
     detail::AirportReader reader(cache().path(), cache().findAirport(code_));
     runways_ = reader.runways();
+    helipads_ = reader.helipads();
     frequencies_ = reader.frequencies();
+    startLocations_ = reader.startLocations();
     switch(reader.type()) {
     case detail::AirportReader::AirportType::LandAirport:
         type_ = Type::Airport;

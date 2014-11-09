@@ -25,47 +25,77 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#include "runway.h"
-#include "latlon.h"
+#ifndef HELIPAD_H
+#define HELIPAD_H
+#include "navaid.h"
+#include "../util/uncertain.h"
 
 namespace PPLNAMESPACE {
 
-Runway::Runway() :
-    // Defaults
-    markings_(Markings::None),
-    surface_(Surface::Asphalt),
-    shoulder_(Shoulder::None),
-    roughness_(0),
-    width_(1),
-    hasCenterlineLights_(false),
-    edgeLights_(EdgeLights::None),
-    hasGeneratedDistanceSigns_(false)
+class Helipad : public Navaid
 {
+public:
+
+    /// Surface types
+    enum class Surface {
+        Asphalt = 1,
+        Concrete = 2,
+        Grass = 3,
+        Dirt = 4,
+        Gravel = 5,
+        DryLakebed = 12,
+        Water = 13,
+        Snow = 14,
+        Transparent = 15,
+    };
+
+    /// Helipad shoulder types
+    enum class Shoulder {
+        None = 0,
+        Asphalt = 1,
+        Concrete = 2,
+    };
+
+    Helipad();
+
+    /// Returns the name of this helipad
+    std::string name() const;
+    void setName(const std::string& newName);
+
+    /// Returns the heading of this helipad, in degrees
+    double heading() const;
+    void setHeading(double newHeading);
+    /// Returns the length of this helipad, in meters
+    double length() const;
+    void setLength(double newLength);
+    /// Returns the width of this helipad, in meters
+    double width() const;
+    void setWidth(double newWidth);
+
+    Surface surface() const;
+    void setSurface(Surface newSurface);
+    Shoulder shoulder() const;
+    void setShoulder(Shoulder newShoulder);
+
+    float roughness() const;
+    void setRoughness(float newRoughness);
+
+    bool hasEdgeLights() const;
+    void setEdgeLights(bool newHasEdgeLights);
+
+    // Pull Navaid::setPosition in as a public function of this class
+    using Navaid::setPosition;
+
+private:
+    std::string name_;
+    double heading_;
+    double length_;
+    double width_;
+    Surface surface_;
+    Shoulder shoulder_;
+    float roughness_;
+    bool hasEdgeLights_;
+};
 
 }
-
-std::string Runway::name() const {
-    return end1_.name() + '/' + end2_.name();
-}
-
-std::string Runway::name() {
-    if(!name_.known()) {
-        // call the const version of this function
-        name_ = static_cast<const Runway*>(this)->name();
-    }
-    return name_.value();
-}
-
-double Runway::length() const {
-    return LatLon::distance(LatLon(end1_.latitude(), end1_.longitude()), LatLon(end2_.latitude(), end2_.longitude()));
-}
-
-double Runway::length() {
-    if(!length_.known()) {
-        // Call the const version
-        length_ = static_cast<const Runway*>(this)->length();
-    }
-    return length_.value();
-}
-
-}
+#endif // HELIPAD_H

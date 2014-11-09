@@ -29,8 +29,10 @@
 #define AIRPORT_H
 #include <XPLMNavigation.h>
 #include "navaid.h"
+#include "helipad.h"
 #include "runway.h"
 #include "airportfrequency.h"
+#include "startlocation.h"
 #include "detail/aptdatcache.h"
 #include "../util/uncertain.h"
 #include <memory>
@@ -54,7 +56,9 @@ public:
     };
     
     typedef std::vector<Runway> runway_list_type;
+    typedef std::vector<Helipad> helipad_list_type;
     typedef std::vector<AirportFrequency> frequency_list_type;
+    typedef std::vector<StartLocation> start_location_list_type;
     
     Airport(const std::string& code);
     
@@ -79,9 +83,15 @@ public:
     
     bool hasRunways();
     const runway_list_type& runways();
+
+    bool hasHelipads();
+    const helipad_list_type& helipads();
     
     bool hasFrequencies();
     const frequency_list_type& frequencies();
+
+    bool hasStartLocations();
+    const start_location_list_type& startLocations();
     
     bool hasType();
     Type type();
@@ -104,7 +114,9 @@ private:
     float elevation_;
     
     uncertain<runway_list_type> runways_;
+    uncertain<helipad_list_type> helipads_;
     uncertain<frequency_list_type> frequencies_;
+    uncertain<start_location_list_type> startLocations_;
     uncertain<Type> type_;
     
     /**
@@ -120,7 +132,7 @@ private:
     static std::unique_ptr<detail::AptDatCache> cache_;
     
     /// Returns a cache used to access more advanced airport
-    /// information
+    /// information. If the cache does not exist, creates it.
     static detail::AptDatCache& cache();
 };
 
