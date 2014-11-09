@@ -49,7 +49,7 @@ std::string Runway::name() const {
 }
 
 std::string Runway::name() {
-    if(!name_.known()) {
+    if(!name_) {
         // call the const version of this function
         name_ = static_cast<const Runway*>(this)->name();
     }
@@ -61,7 +61,7 @@ double Runway::length() const {
 }
 
 double Runway::length() {
-    if(!length_.known()) {
+    if(!length_) {
         // Call the const version
         length_ = static_cast<const Runway*>(this)->length();
     }

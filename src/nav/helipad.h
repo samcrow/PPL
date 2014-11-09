@@ -28,7 +28,6 @@
 #ifndef HELIPAD_H
 #define HELIPAD_H
 #include "navaid.h"
-#include "../util/uncertain.h"
 
 namespace PPLNAMESPACE {
 

@@ -32,7 +32,9 @@
 namespace PPLNAMESPACE {
 
 /**
- * Stores an object and a flag that describes whether this value is known
+ * Stores an object and a flag that describes whether this value is known.
+ *
+ * @depreciated Use boost::optional instead
  */
 template < typename T >
 class uncertain {

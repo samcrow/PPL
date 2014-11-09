@@ -28,8 +28,8 @@
 #ifndef RUNWAY_H
 #define RUNWAY_H
 #include <string>
+#include <boost/optional.hpp>
 #include "../namespaces.h"
-#include "../util/uncertain.h"
 
 namespace PPLNAMESPACE {
 
@@ -131,7 +131,7 @@ public:
         }
         /// Returns a name, like "16R" or "28L", for this runway end
         std::string name() {
-            if(!name_.known()) {
+            if(!name_) {
                 std::string nameString = std::to_string(heading_);
                 if(suffix_ != Suffix::None) {
                     nameString.append({ static_cast<char>( suffix_ ) });
@@ -179,11 +179,11 @@ public:
         
         void setHeading(int newHeading) {
             heading_ = newHeading;
-            name_.question();
+            name_ = boost::none;
         }
         void setSuffix(Suffix newSuffix) {
             suffix_ = newSuffix;
-            name_.question();
+            name_ = boost::none;
 
         }
         void setLatitude(double newLatitude) {
@@ -215,7 +215,7 @@ public:
         /// The suffix
         Suffix suffix_;
         
-        uncertain<std::string> name_;
+        boost::optional<std::string> name_;
         
         double latitude_;
         double longitude_;
@@ -322,9 +322,9 @@ protected:
     End end1_;
     End end2_;
     
-    uncertain<std::string> name_;
+    boost::optional<std::string> name_;
     /// Length of the runway, in meters
-    uncertain<double> length_;
+    boost::optional<double> length_;
     
 };
 

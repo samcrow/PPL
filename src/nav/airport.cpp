@@ -72,53 +72,53 @@ float Airport::elevation() const {
 }
 
 bool Airport::hasRunways() {
-    if(!runways_.known()) {
+    if(!runways_) {
         // Check
         if(cache().hasAirportCached(code_)) {
             copyDataFromCache();
         }
     }
-    return runways_.known();
+    return runways_.operator bool();
 }
 
 bool Airport::hasHelipads() {
-    if(!helipads_.known()) {
+    if(!helipads_) {
         // Check
         if(cache().hasAirportCached(code_)) {
             copyDataFromCache();
         }
     }
-    return helipads_.known();
+    return helipads_.operator bool();
 }
 
 bool Airport::hasFrequencies() {
-    if(!frequencies_.known()) {
+    if(!frequencies_) {
         // Check
         if(cache().hasAirportCached(code_)) {
             copyDataFromCache();
         }
     }
-    return frequencies_.known();
+    return frequencies_.operator bool();
 }
 
 bool Airport::hasStartLocations() {
-    if(!startLocations_.known()) {
+    if(!startLocations_) {
         // Check
         if(cache().hasAirportCached(code_)) {
             copyDataFromCache();
         }
     }
-    return frequencies_.known();
+    return frequencies_.operator bool();
 }
 
 bool Airport::hasType() {
-    if(!type_.known()) {
+    if(!type_) {
         // Check
         if(cache().hasAirportCached(code_)) {
             copyDataFromCache();
         }
     }
-    return type_.known();
+    return type_.operator bool();
 }
 
 const Airport::runway_list_type& Airport::runways() {

@@ -34,7 +34,7 @@
 #include "airportfrequency.h"
 #include "startlocation.h"
 #include "detail/aptdatcache.h"
-#include "../util/uncertain.h"
+#include <boost/optional.hpp>
 #include <memory>
 #include <string>
 #include <future>
@@ -113,11 +113,11 @@ private:
     std::string code_;
     float elevation_;
     
-    uncertain<runway_list_type> runways_;
-    uncertain<helipad_list_type> helipads_;
-    uncertain<frequency_list_type> frequencies_;
-    uncertain<start_location_list_type> startLocations_;
-    uncertain<Type> type_;
+    boost::optional<runway_list_type> runways_;
+    boost::optional<helipad_list_type> helipads_;
+    boost::optional<frequency_list_type> frequencies_;
+    boost::optional<start_location_list_type> startLocations_;
+    boost::optional<Type> type_;
     
     /**
      * @brief The reference to X-Plane's entry for this airport
