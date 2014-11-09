@@ -114,7 +114,6 @@ HEADERS += \
     src/scenery/proberesult.h \
     src/periodicaction.h \
     src/nav/airport.h \
-    src/util/uncertain.h \
     src/nav/detail/airportreader.h \
     src/nav/detail/aptdatreader.h \
     src/nav/detail/aptdatcache.h \
