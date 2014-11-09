@@ -123,7 +123,8 @@ HEADERS += \
     src/nav/runway.h \
     src/util/concurrentmap.h \
     src/nav/latlon.h \
-    src/nav/navaid.h
+    src/nav/navaid.h \
+    src/util/differentiator.h
 
 SOURCES += \
     src/pluginpath.cpp \
@@ -167,7 +168,8 @@ SOURCES += \
     src/nav/frequency.cpp \
     src/nav/runway.cpp \
     src/nav/latlon.cpp \
-    src/nav/navaid.cpp
+    src/nav/navaid.cpp \
+    src/util/differentiator.cpp
 
 
 withsound {
