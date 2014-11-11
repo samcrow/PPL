@@ -35,9 +35,8 @@ VOR::VOR(const std::string &id) :
     // Get frequency
     int rawFrequency;
     XPLMGetNavAidInfo(ref_, nullptr, nullptr, nullptr, nullptr, &rawFrequency, nullptr, nullptr, nullptr, nullptr);
-    // Assume the frequency value is in Hertz
-    // This is probably incorrect
-    frequency_ = Frequency(rawFrequency);
+
+    frequency_ = Frequency(rawFrequency * 10000);
 }
 
 Navaid::Type VOR::navaidType() const {

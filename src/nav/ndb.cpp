@@ -35,7 +35,7 @@ NDB::NDB(const std::string &id) :
     // Get frequency
     int rawFrequency;
     XPLMGetNavAidInfo(ref_, nullptr, nullptr, nullptr, nullptr, &rawFrequency, nullptr, nullptr, nullptr, nullptr);
-    // Assume the frequency value is in Hertz
+    // The frequency value is in Hertz
     frequency_ = Frequency(rawFrequency);
 }
 

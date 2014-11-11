@@ -85,9 +85,8 @@ void AptDatCache::startFindingAirport(const std::string& code) {
 
 void AptDatCache::startFindingAllAirports() {
     if(reader.readInProgress()) {
-        throw ReadInProgressException("Reading already in progress. Can't search.");
+        return;
     }
-    
     std::thread findThread(&AptDatCache::findAllAirports, this);
     findThread.detach();
 }

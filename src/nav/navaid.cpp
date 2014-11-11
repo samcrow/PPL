@@ -68,6 +68,21 @@ Navaid::Navaid(XPLMNavRef ref) :
                       );
 
     setPosition({ latitude, longitude });
+
+    // Because id_ and name were resized to be unnecessarily large
+    // and then null-terminated by the C function.
+    // Remove all the null termination and possible extraneous characters
+    auto trim = [](std::string& str) {
+        auto iter = str.cbegin();
+        while(*iter != 0 && iter != str.cend()) {
+            iter++;
+        }
+        // Now either iter points to the first null byte or to the end
+        // This should be the character after the end of the new string
+        str.resize( std::distance(str.cbegin(), iter) );
+    };
+    trim(id_);
+    trim(name_);
 }
 
 float Navaid::elevation() const {
