@@ -43,65 +43,65 @@ AirportReader::AirportReader(const std::string& filePath, std::fstream::pos_type
 }
 
 float AirportReader::elevation() {
-    if(!elevation_.known()) {
+    if(!elevation_) {
         readFirstLine();
-        assert(elevation_.known());
+        assert(elevation_.operator bool());
     }
     return elevation_.value();
 }
 
 std::string AirportReader::code() {
-    if(!code_.known()) {
+    if(!code_) {
         readFirstLine();
-        assert(code_.known());
+        assert(code_.operator bool());
     }
     return code_.value();
 }
 
 std::string AirportReader::name() {
-    if(!name_.known()) {
+    if(!name_) {
         readFirstLine();
-        assert(name_.known());
+        assert(name_.operator bool());
     }
     return name_.value();
 }
 
 AirportReader::AirportType AirportReader::type() {
-    if(!type_.known()) {
+    if(!type_) {
         readFirstLine();
-        assert(type_.known());
+        assert(type_.operator bool());
     }
     return type_.value();
 }
 
 const AirportReader::runway_list_type& AirportReader::runways() {
-    if(!runways_.known()) {
+    if(!runways_) {
         readRunways();
-        assert(runways_.known());
+        assert(runways_.operator bool());
     }
     return runways_.value();
 }
 
 const AirportReader::helipad_list_type& AirportReader::helipads() {
-    if(!helipads_.known()) {
+    if(!helipads_) {
         readHelipads();
-        assert(helipads_.known());
+        assert(helipads_.operator bool());
     }
     return helipads_.value();
 }
 
 const AirportReader::frequency_list_type& AirportReader::frequencies() {
-    if(!frequencies_.known()) {
+    if(!frequencies_) {
         readFrequencies();
-        assert(frequencies_.known());
+        assert(frequencies_.operator bool());
     }
     return frequencies_.value();
 }
 
 const AirportReader::start_location_list_type& AirportReader::startLocations() {
-    if(!startLocations_.known()) {
+    if(!startLocations_) {
         readStartLocations();
-        assert(startLocations_.known());
+        assert(startLocations_.operator bool());
     }
     return startLocations_.value();
 }
@@ -114,46 +114,27 @@ void AirportReader::readFirstLine() {
     type_ = static_cast< AirportType >(airportType);
     
     // Elevation
-    stream >> elevation_.value();
-    elevation_.affirm();
+    float elevation;
+    stream >> elevation;
+    elevation_ = elevation;
     // Two depreciated values
     int dummy;
     stream >> dummy;
     stream >> dummy;
     // code
-    stream >> code_.value();
-    code_.affirm();
+    std::string code;
+    stream >> code;
+    code_ = code;
     
-    // Skip spaces
-    stream.ignore(std::numeric_limits<std::streamsize>::max(), ' ');
-    //Name: Rest of line
-    // Read
-    const auto readMoreLineTerminators = [this] {
-        while(!stream.eof()) {
-            char c = stream.peek();
-            if(c == '\n' || c == '\r') {
-                // Read and ignore that character
-                stream.get();
-            }
-            else {
-                break;
-            }
-        }
-    };
-    while(!stream.eof()) {
-        const char c = stream.get();
-        if(c == '\n' || c == '\r') {
-            readMoreLineTerminators();
-            break;
-        }
-        name_.value().push_back(c);
-    }
-    name_.affirm();
+    // Read name
+    std::string name;
+    readUntilLineEnd(name);
+    name_ = name;
 }
 
 void AirportReader::readRunways() {
     moveToBeginning();
-    runways_.affirm();
+    runways_ = runway_list_type();
     
     // Skip past the first line, containing the airport code
     int dummy;
@@ -291,7 +272,7 @@ void AirportReader::readRunways() {
 
 void AirportReader::readHelipads() {
     moveToBeginning();
-    helipads_.affirm();
+    helipads_ = helipad_list_type();
 
     // Skip past the first line, containing the airport code
     int dummy;
@@ -370,7 +351,7 @@ void AirportReader::readHelipads() {
 
 void AirportReader::readFrequencies() {
     moveToBeginning();
-    frequencies_.affirm();
+    frequencies_ = frequency_list_type();
     
     // Skip past the first line, containing the airport code
     int dummy;
@@ -441,7 +422,7 @@ void AirportReader::readFrequencies() {
 
 void AirportReader::readStartLocations() {
     moveToBeginning();
-    startLocations_.affirm();
+    startLocations_ = start_location_list_type();
 
     // Skip past the first line, containing the airport code
     int dummy;

@@ -28,7 +28,6 @@
 #ifndef AIRPORTREADER_H
 #define AIRPORTREADER_H
 #include "../../namespaces.h"
-#include "../../util/uncertain.h"
 #include "../runway.h"
 #include "../helipad.h"
 #include "../startlocation.h"
@@ -96,23 +95,23 @@ private:
     std::ifstream stream;
     
     /// Airport elevation, feet
-    uncertain<float> elevation_;
+    boost::optional<float> elevation_;
     /// Airport code
-    uncertain<std::string> code_;
+    boost::optional<std::string> code_;
     /// Airport name
-    uncertain<std::string> name_;
+    boost::optional<std::string> name_;
     /// Airport type
-    uncertain<AirportType> type_;
+    boost::optional<AirportType> type_;
     
     /// Runways
-    uncertain< runway_list_type > runways_;
+    boost::optional< runway_list_type > runways_;
 
-    uncertain< helipad_list_type > helipads_;
+    boost::optional< helipad_list_type > helipads_;
     
     /// Frequencies
-    uncertain< frequency_list_type > frequencies_;
+    boost::optional< frequency_list_type > frequencies_;
 
-    uncertain< start_location_list_type > startLocations_;
+    boost::optional< start_location_list_type > startLocations_;
     
     void readFirstLine();
     

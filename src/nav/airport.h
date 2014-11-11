@@ -97,34 +97,18 @@ public:
     Type type();
     
 protected:
-    
-    /**
-     * @brief Returns the reference to X-Plane's entry for this airport.
-     * 
-     * If a reference is not yet known, it is created. If it could not be created,
-     * an exception is thrown.
-     * 
-     * @return 
-     */
-    XPLMNavRef underlyingReference();
+
     
 private:
-    std::string name_;
-    std::string code_;
-    float elevation_;
     
     boost::optional<runway_list_type> runways_;
     boost::optional<helipad_list_type> helipads_;
     boost::optional<frequency_list_type> frequencies_;
     boost::optional<start_location_list_type> startLocations_;
     boost::optional<Type> type_;
+
     
-    /**
-     * @brief The reference to X-Plane's entry for this airport
-     */
-    XPLMNavRef navRef_ = XPLM_NAV_NOT_FOUND;
-    
-    XPLMNavRef findNavRef();
+    static XPLMNavRef findNavRef(const std::string& code);
     
     void copyDataFromCache();
     

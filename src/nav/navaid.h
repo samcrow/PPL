@@ -27,31 +27,78 @@
 
 #ifndef NAVAID_H
 #define NAVAID_H
-#include "../namespaces.h"
-#include "latlon.h"
+#include "positioned.h"
+#include <XPLMNavigation.h>
 
 namespace PPLNAMESPACE {
 
 /**
- * @brief A base class for navigational aids and related entities
+ * Represents a navaid of one of the following types:
+ *
+ * * Airport
+ * * NDB
+ * * VOR
+ * * ILS
+ * * Localizer
+ * * Glideslope
+ * * Outer marker
+ * * Middle marker
+ * * Inner marker
+ * * Fix
+ * * DME
+ * * Latitude/longitude (used only in the FMS)
  */
-class Navaid
+class Navaid : public Positioned
 {
 public:
-    Navaid(const LatLon& position);
-    Navaid(LatLon&& position);
-    Navaid();
-    
-    /// Returns this navaid's position
-    const LatLon& position() const;
-    
+
+    /// Types of supported navaids
+    enum class Type {
+        Unknown      = xplm_Nav_Unknown,
+        Airport      = xplm_Nav_Airport,
+        NDB          = xplm_Nav_NDB,
+        VOR          = xplm_Nav_VOR,
+        ILS          = xplm_Nav_ILS,
+        Localizer    = xplm_Nav_Localizer,
+        Glideslope   = xplm_Nav_GlideSlope,
+        OuterMarker  = xplm_Nav_OuterMarker,
+        MiddleMarker = xplm_Nav_MiddleMarker,
+        InnerMarker  = xplm_Nav_InnerMarker,
+        Fix          = xplm_Nav_Fix,
+        DME          = xplm_Nav_DME,
+        LatLon       = xplm_Nav_LatLon,
+    };
+
+    Navaid(XPLMNavRef ref);
+
+    float elevation() const;
+    std::string id() const;
+    std::string name() const;
+
+    /// Returns the type of this navaid
+    virtual Type navaidType() const;
+
+    /**
+     * Safely downcasts this navaid to a subtype
+     */
+    template < typename T >
+    T* downcast();
+    /**
+     * Safely downcasts this navaid to a subtype
+     */
+    template < typename T >
+    const T* downcast() const;
+
 protected:
-    
-    void setPosition(const LatLon& position);
-    void setPosition(LatLon&& position);
-    
-private:
-    LatLon position_;
+
+    XPLMNavRef ref_;
+    /// Elevation, in feet
+    float elevation_;
+
+    std::string id_;
+    std::string name_;
+
+
 };
 
 }

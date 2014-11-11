@@ -123,10 +123,21 @@ HEADERS += \
     src/nav/runway.h \
     src/util/concurrentmap.h \
     src/nav/latlon.h \
-    src/nav/navaid.h \
     src/util/differentiator.h \
     src/nav/helipad.h \
-    src/nav/startlocation.h
+    src/nav/startlocation.h \
+    src/nav/positioned.h \
+    src/nav/navaid.h \
+    src/nav/ndb.h \
+    src/nav/vor.h \
+    src/nav/ils.h \
+    src/nav/localizer.h \
+    src/nav/glideslope.h \
+    src/nav/outermarker.h \
+    src/nav/middlemarker.h \
+    src/nav/innermarker.h \
+    src/nav/fix.h \
+    src/nav/dme.h
 
 SOURCES += \
     src/pluginpath.cpp \
@@ -170,10 +181,21 @@ SOURCES += \
     src/nav/frequency.cpp \
     src/nav/runway.cpp \
     src/nav/latlon.cpp \
-    src/nav/navaid.cpp \
     src/util/differentiator.cpp \
     src/nav/helipad.cpp \
-    src/nav/startlocation.cpp
+    src/nav/startlocation.cpp \
+    src/nav/positioned.cpp \
+    src/nav/navaid.cpp \
+    src/nav/ndb.cpp \
+    src/nav/vor.cpp \
+    src/nav/ils.cpp \
+    src/nav/localizer.cpp \
+    src/nav/glideslope.cpp \
+    src/nav/outermarker.cpp \
+    src/nav/middlemarker.cpp \
+    src/nav/innermarker.cpp \
+    src/nav/fix.cpp \
+    src/nav/dme.cpp
 
 
 withsound {

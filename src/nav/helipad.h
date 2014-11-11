@@ -27,11 +27,11 @@
 
 #ifndef HELIPAD_H
 #define HELIPAD_H
-#include "navaid.h"
+#include "positioned.h"
 
 namespace PPLNAMESPACE {
 
-class Helipad : public Navaid
+class Helipad : public Positioned
 {
 public:
 
@@ -83,7 +83,7 @@ public:
     void setEdgeLights(bool newHasEdgeLights);
 
     // Pull Navaid::setPosition in as a public function of this class
-    using Navaid::setPosition;
+    using Positioned::setPosition;
 
 private:
     std::string name_;

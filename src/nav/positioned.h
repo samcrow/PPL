@@ -25,50 +25,35 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#ifndef PPL_EXCEPTIONS_H
-#define PPL_EXCEPTIONS_H
-#include <stdexcept>
+#ifndef POSITIONED_H
+#define POSITIONED_H
 #include "../namespaces.h"
+#include "latlon.h"
 
 namespace PPLNAMESPACE {
 
-
 /**
- * @brief Superclass for exceptions thrown from failed airport searches
+ * @brief A base class for something with a geographical position
  */
-class AirportSearchException : public std::runtime_error {
+class Positioned
+{
 public:
-    AirportSearchException(const std::string& what_arg) : std::runtime_error(what_arg) {}
-    AirportSearchException(const char* what_arg) : std::runtime_error(what_arg) {}
-};
-/**
- * @brief An exception thrown when a search was perfomed for an airport
- * that does not exist
- */
-class NoSuchAirportException : public AirportSearchException {
-public:
-    NoSuchAirportException(const std::string& what_arg) : AirportSearchException(what_arg) {}
-    NoSuchAirportException(const char* what_arg) : AirportSearchException(what_arg) {}
-};
-
-/**
- * @brief An exception thrown when a search was performed for an airport that may exist,
- * but the airport data file is still being parsed
- */
-class ReadInProgressException : public AirportSearchException {
-public:
-    ReadInProgressException(const std::string& what_arg) : AirportSearchException(what_arg) {}
-    ReadInProgressException(const char* what_arg) : AirportSearchException(what_arg) {}
-};
-/**
- * @brief An exception thrown when a Navaid subclass constructor
- * is called but no navaid matching the specified criteria could be found
- */
-class NoSuchNavaidException : public std::runtime_error {
-    NoSuchNavaidException(const std::string& what_arg) : std::runtime_error(what_arg) {}
-    NoSuchNavaidException(const char* what_arg) : std::runtime_error(what_arg) {}
+    Positioned(const LatLon& position);
+    Positioned(LatLon&& position);
+    Positioned();
+    
+    /// Returns this navaid's position
+    const LatLon& position() const;
+    
+protected:
+    
+    void setPosition(const LatLon& position);
+    void setPosition(LatLon&& position);
+    
+private:
+    LatLon position_;
 };
 
 }
 
-#endif // PPL_EXCEPTIONS_H
+#endif // POSITIONED_H

@@ -36,45 +36,21 @@ namespace PPLNAMESPACE {
 std::unique_ptr<detail::AptDatCache> Airport::cache_;
 
 Airport::Airport(const std::string& code) :
-    code_(code)
+    Navaid(findNavRef(code))
 {
-    navRef_ = findNavRef();
-    if(navRef_ == XPLM_NAV_NOT_FOUND) {
-        throw std::invalid_argument("No airport with the requested ID was found");
-    }
-    // Reserve space
-    name_.resize(256);
-    float latitude;
-    float longitude;
-    
-    XPLMGetNavAidInfo(navRef_, nullptr, &latitude, &longitude, &elevation_, nullptr, nullptr, nullptr, &name_.front(), nullptr);
-    setPosition({ latitude, longitude });
-    
     // Start the apt.dat reading, if not already started
     try {
-        if(!cache().hasAirportCached(code_)) {
+        if(!cache().hasAirportCached(id_)) {
             cache().startFindingAllAirports();
         }
     }
     catch (std::exception& ex) { std::cerr << "Failed to start finding all airports: " << ex.what() << std::endl; }
 }
 
-std::string Airport::name() const {
-    return name_;
-}
-
-std::string Airport::code() const {
-    return code_;
-}
-
-float Airport::elevation() const {
-    return elevation_;
-}
-
 bool Airport::hasRunways() {
     if(!runways_) {
         // Check
-        if(cache().hasAirportCached(code_)) {
+        if(cache().hasAirportCached(id_)) {
             copyDataFromCache();
         }
     }
@@ -84,7 +60,7 @@ bool Airport::hasRunways() {
 bool Airport::hasHelipads() {
     if(!helipads_) {
         // Check
-        if(cache().hasAirportCached(code_)) {
+        if(cache().hasAirportCached(id_)) {
             copyDataFromCache();
         }
     }
@@ -94,7 +70,7 @@ bool Airport::hasHelipads() {
 bool Airport::hasFrequencies() {
     if(!frequencies_) {
         // Check
-        if(cache().hasAirportCached(code_)) {
+        if(cache().hasAirportCached(id_)) {
             copyDataFromCache();
         }
     }
@@ -104,7 +80,7 @@ bool Airport::hasFrequencies() {
 bool Airport::hasStartLocations() {
     if(!startLocations_) {
         // Check
-        if(cache().hasAirportCached(code_)) {
+        if(cache().hasAirportCached(id_)) {
             copyDataFromCache();
         }
     }
@@ -114,7 +90,7 @@ bool Airport::hasStartLocations() {
 bool Airport::hasType() {
     if(!type_) {
         // Check
-        if(cache().hasAirportCached(code_)) {
+        if(cache().hasAirportCached(id_)) {
             copyDataFromCache();
         }
     }
@@ -156,18 +132,8 @@ Airport::Type Airport::type() {
     return type_.value();
 }
 
-XPLMNavRef Airport::underlyingReference() {
-    if(navRef_ == XPLM_NAV_NOT_FOUND) {
-        navRef_ = findNavRef();
-        if(navRef_ == XPLM_NAV_NOT_FOUND) {
-            throw std::runtime_error("No navaid with this airport ID found by X-Plane");
-        }
-    }
-    return navRef_;
-}
-
-XPLMNavRef Airport::findNavRef() {
-    return XPLMFindNavAid(nullptr, code_.c_str(), nullptr, nullptr, nullptr, xplm_Nav_Airport);
+XPLMNavRef Airport::findNavRef(const std::string& code) {
+    return XPLMFindNavAid(nullptr, code.c_str(), nullptr, nullptr, nullptr, xplm_Nav_Airport);
 }
 
 
@@ -179,7 +145,7 @@ detail::AptDatCache& Airport::cache() {
 }
 
 void Airport::copyDataFromCache() {
-    detail::AirportReader reader(cache().path(), cache().findAirport(code_));
+    detail::AirportReader reader(cache().path(), cache().findAirport(id_));
     runways_ = reader.runways();
     helipads_ = reader.helipads();
     frequencies_ = reader.frequencies();

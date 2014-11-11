@@ -26,33 +26,231 @@
 // either expressed or implied, of the FreeBSD Project.
 
 #include "navaid.h"
+#include "airport.h"
+#include "ndb.h"
+#include "vor.h"
+#include "ils.h"
+#include "localizer.h"
+#include "glideslope.h"
+#include "outermarker.h"
+#include "middlemarker.h"
+#include "innermarker.h"
+#include "fix.h"
+#include "dme.h"
 
 namespace PPLNAMESPACE {
 
-Navaid::Navaid(const LatLon& position) :
-    position_(position)
+Navaid::Navaid(XPLMNavRef ref) :
+    ref_(ref)
 {
+    // Check reference
+    if(ref == XPLM_NAV_NOT_FOUND) {
+        throw std::invalid_argument("Navaid cannot be instantiated with an inavlid nav reference");
+    }
+
+    // Set up position and other information
+    // Allocate space for name and ID
+    id_.resize(32);
+    name_.resize(256);
+    float latitude;
+    float longitude;
+
+    XPLMGetNavAidInfo(ref_,
+                      nullptr,
+                      &latitude,
+                      &longitude,
+                      &elevation_,
+                      nullptr,
+                      nullptr,
+                      &id_.front(),
+                      &name_.front(),
+                      nullptr
+                      );
+
+    setPosition({ latitude, longitude });
 }
 
-Navaid::Navaid(LatLon&& position) :
-    position_(position)
-{
+float Navaid::elevation() const {
+    return elevation_;
+}
+std::string Navaid::id() const {
+    return id_;
+}
+std::string Navaid::name() const {
+    return name_;
 }
 
-Navaid::Navaid()
-{
+Navaid::Type Navaid::navaidType() const {
+    // Default
+    return Type::Unknown;
 }
 
-void Navaid::setPosition(const LatLon& position) {
-    position_ = position;
+// Specialize downcast for every subclass
+
+template<>
+Airport* Navaid::downcast() {
+    if(navaidType() != Type::Airport) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< Airport* >(this);
 }
 
-void Navaid::setPosition(LatLon&& position) {
-    position_ = position;
+template<>
+const Airport* Navaid::downcast() const {
+    if(navaidType() != Type::Airport) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< const Airport* >(this);
+}
+template<>
+NDB* Navaid::downcast() {
+    if(navaidType() != Type::NDB) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< NDB* >(this);
 }
 
-const LatLon& Navaid::position() const {
-    return position_;
+template<>
+const NDB* Navaid::downcast() const {
+    if(navaidType() != Type::NDB) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< const NDB* >(this);
+}
+template<>
+VOR* Navaid::downcast() {
+    if(navaidType() != Type::VOR) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< VOR* >(this);
+}
+
+template<>
+const VOR* Navaid::downcast() const {
+    if(navaidType() != Type::VOR) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< const VOR* >(this);
+}
+template<>
+ILS* Navaid::downcast() {
+    if(navaidType() != Type::ILS) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< ILS* >(this);
+}
+
+template<>
+const ILS* Navaid::downcast() const {
+    if(navaidType() != Type::ILS) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< const ILS* >(this);
+}
+template<>
+Localizer* Navaid::downcast() {
+    if(navaidType() != Type::Localizer) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< Localizer* >(this);
+}
+
+template<>
+const Localizer* Navaid::downcast() const {
+    if(navaidType() != Type::Localizer) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< const Localizer* >(this);
+}
+template<>
+Glideslope* Navaid::downcast() {
+    if(navaidType() != Type::Glideslope) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< Glideslope* >(this);
+}
+
+template<>
+const Glideslope* Navaid::downcast() const {
+    if(navaidType() != Type::Glideslope) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< const Glideslope* >(this);
+}
+template<>
+OuterMarker* Navaid::downcast() {
+    if(navaidType() != Type::OuterMarker) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< OuterMarker* >(this);
+}
+
+template<>
+const OuterMarker* Navaid::downcast() const {
+    if(navaidType() != Type::OuterMarker) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< const OuterMarker* >(this);
+}
+template<>
+MiddleMarker* Navaid::downcast() {
+    if(navaidType() != Type::MiddleMarker) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< MiddleMarker* >(this);
+}
+
+template<>
+const MiddleMarker* Navaid::downcast() const {
+    if(navaidType() != Type::MiddleMarker) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< const MiddleMarker* >(this);
+}
+template<>
+InnerMarker* Navaid::downcast() {
+    if(navaidType() != Type::InnerMarker) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< InnerMarker* >(this);
+}
+
+template<>
+const InnerMarker* Navaid::downcast() const {
+    if(navaidType() != Type::InnerMarker) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< const InnerMarker* >(this);
+}
+template<>
+Fix* Navaid::downcast() {
+    if(navaidType() != Type::Fix) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< Fix* >(this);
+}
+
+template<>
+const Fix* Navaid::downcast() const {
+    if(navaidType() != Type::Fix) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< const Fix* >(this);
+}
+template<>
+DME* Navaid::downcast() {
+    if(navaidType() != Type::DME) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< DME* >(this);
+}
+
+template<>
+const DME* Navaid::downcast() const {
+    if(navaidType() != Type::DME) {
+        throw std::runtime_error("Can't downcast a navaid to an inappropriate type");
+    }
+    return static_cast< const DME* >(this);
 }
 
 }

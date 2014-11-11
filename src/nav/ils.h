@@ -25,50 +25,31 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
-#ifndef PPL_EXCEPTIONS_H
-#define PPL_EXCEPTIONS_H
-#include <stdexcept>
-#include "../namespaces.h"
+#ifndef ILS_H
+#define ILS_H
+#include "navaid.h"
+#include "frequency.h"
 
 namespace PPLNAMESPACE {
 
+class ILS : public Navaid
+{
+public:
+    ILS(const std::string& id);
 
-/**
- * @brief Superclass for exceptions thrown from failed airport searches
- */
-class AirportSearchException : public std::runtime_error {
-public:
-    AirportSearchException(const std::string& what_arg) : std::runtime_error(what_arg) {}
-    AirportSearchException(const char* what_arg) : std::runtime_error(what_arg) {}
-};
-/**
- * @brief An exception thrown when a search was perfomed for an airport
- * that does not exist
- */
-class NoSuchAirportException : public AirportSearchException {
-public:
-    NoSuchAirportException(const std::string& what_arg) : AirportSearchException(what_arg) {}
-    NoSuchAirportException(const char* what_arg) : AirportSearchException(what_arg) {}
-};
+    /// Returns this NDB's frequency
+    Frequency frequency() const;
+    float heading() const;
 
-/**
- * @brief An exception thrown when a search was performed for an airport that may exist,
- * but the airport data file is still being parsed
- */
-class ReadInProgressException : public AirportSearchException {
-public:
-    ReadInProgressException(const std::string& what_arg) : AirportSearchException(what_arg) {}
-    ReadInProgressException(const char* what_arg) : AirportSearchException(what_arg) {}
-};
-/**
- * @brief An exception thrown when a Navaid subclass constructor
- * is called but no navaid matching the specified criteria could be found
- */
-class NoSuchNavaidException : public std::runtime_error {
-    NoSuchNavaidException(const std::string& what_arg) : std::runtime_error(what_arg) {}
-    NoSuchNavaidException(const char* what_arg) : std::runtime_error(what_arg) {}
+    virtual Type navaidType() const override;
+
+private:
+    static XPLMNavRef findNavRef(const std::string& id);
+
+    Frequency frequency_;
+    float heading_;
+
 };
 
 }
-
-#endif // PPL_EXCEPTIONS_H
+#endif // ILS_H

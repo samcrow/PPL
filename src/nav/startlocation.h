@@ -27,12 +27,12 @@
 
 #ifndef STARTLOCATION_H
 #define STARTLOCATION_H
-#include "navaid.h"
+#include "positioned.h"
 
 namespace PPLNAMESPACE {
 
 /// Represents a startup location at an airport
-class StartLocation : public Navaid
+class StartLocation : public Positioned
 {
 public:
 
@@ -61,7 +61,7 @@ public:
     StartLocation();
 
     // Pull Navaid::setPosition in as a public function of this class
-    using Navaid::setPosition;
+    using Positioned::setPosition;
 
     const std::string& name() const;
     void setName(const std::string& newName);
