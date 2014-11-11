@@ -62,12 +62,6 @@ public:
     
     Airport(const std::string& code);
     
-    /**
-     * @brief Returns the elevation of the airport in feet
-     * @return 
-     */
-    float elevation() const;
-    
     // Next: Accessors for information from the airport data file
     
     bool hasRunways();
