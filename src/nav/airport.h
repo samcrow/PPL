@@ -63,17 +63,6 @@ public:
     Airport(const std::string& code);
     
     /**
-     * @brief Returns the name of this airport
-     * @return 
-     */
-    std::string name() const;
-    /**
-     * @brief Returns the ICAO/FAA code of the airport
-     * @return 
-     */
-    std::string code() const;
-    
-    /**
      * @brief Returns the elevation of the airport in feet
      * @return 
      */
