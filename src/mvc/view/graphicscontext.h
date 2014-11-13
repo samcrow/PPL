@@ -29,6 +29,7 @@
 #define GRAPHICSCONTEXT_H
 #include "../../namespaces.h"
 #include <string>
+#include <vector>
 
 namespace PPLNAMESPACE {
 
@@ -95,6 +96,23 @@ public:
     virtual void fillRect(float top, float left, float bottom, float right) = 0;
     
     virtual void strokeRect(float top, float left, float bottom, float right, float width = 1) = 0;
+
+    /**
+     * Fills a polygon defined by the given points.
+     *
+     * The polygon does not need to be convex, but it must not be self-intersecting.
+     *
+     * @param points The points that define the polygon.
+     * This should be an array of length 3 * pointCount.
+     * Each group of 3 values represents a point. The three values
+     * are in X, Y, Z order.
+     *
+     * @param pointCount The number of points to draw
+     */
+    virtual void fillPolygon(double* points, int pointCount) = 0;
+    inline void fillPolygon(std::vector<double> points) {
+        fillPolygon(&points.front(), points.size());
+    }
     
     // Text section
     

@@ -26,6 +26,11 @@
 // either expressed or implied, of the FreeBSD Project.
 
 #include "glgraphicscontext.h"
+#include <XPLMGraphics.h>
+#include "../../namespaces.h"
+#include "basicgraphicscontext.h"
+#include "../../fontmgr.h"
+#include "fontcache.h"
 
 #if APL == 1
 #include <GL/glew.h>
@@ -43,13 +48,12 @@
 #include <GL/glu.h>
 #endif
 
-#include <XPLMGraphics.h>
-
 namespace PPLNAMESPACE {
 
 GLGraphicsContext::GLGraphicsContext(float top, float bottom, float left, float right) :
     BasicGraphicsContext(top, bottom, left, right),
-    fontCache(fontManager)
+    fontCache(fontManager),
+    tesselator(nullptr)
 {
 }
 
@@ -83,6 +87,30 @@ void GLGraphicsContext::strokeRect(float top, float left, float bottom, float ri
     
     
     glPopAttrib();
+}
+
+void GLGraphicsContext::fillPolygon(double* points, int pointCount) {
+    // Initialize tesselator
+    if(!tesselator) {
+        tesselator = gluNewTess();
+    }
+
+    // Set up callbacks
+    gluTessCallback(tesselator, GLU_TESS_BEGIN, makeGluCallback< decltype(&glBegin), GLenum >( &glBegin ));
+    gluTessCallback(tesselator, GLU_TESS_END, makeGluCallback(&glEnd));
+    gluTessCallback(tesselator, GLU_TESS_VERTEX, makeGluCallback<decltype(&glVertex3dv), const double* >(&glVertex3dv));
+
+    gluTessBeginPolygon(tesselator, nullptr);
+    gluTessBeginContour(tesselator);
+
+    // Specify vertices
+    for(int i = 0; i < pointCount; i++) {
+        gluTessVertex(tesselator, points + i * 3, points + i * 3);
+    }
+
+    gluTessEndContour(tesselator);
+    gluTessEndPolygon(tesselator);
+
 }
 
 void GLGraphicsContext::strokeText(const std::string& text, float x, float y, Typeface face, unsigned int size, bool drawBox)
@@ -131,7 +159,9 @@ void GLGraphicsContext::setGlColor(const Color &color) {
 }
 
 GLGraphicsContext::~GLGraphicsContext() {
-    
+    if(tesselator) {
+        gluDeleteTess(tesselator);
+    }
 }
 
 }

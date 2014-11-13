@@ -27,10 +27,14 @@
 
 #ifndef GLGRAPHICSCONTEXT_H
 #define GLGRAPHICSCONTEXT_H
+
 #include "../../namespaces.h"
 #include "basicgraphicscontext.h"
 #include "../../fontmgr.h"
 #include "fontcache.h"
+#include <cassert>
+
+class GLUtesselator;
 
 namespace PPLNAMESPACE {
 
@@ -47,7 +51,9 @@ public:
     void fillRect(float top, float left, float bottom, float right);
     void strokeRect(float top, float left, float bottom, float right, float width = 1);
     
-   
+    virtual void fillPolygon(double* points, int pointCount);
+
+
     virtual void strokeText(const std::string& text, float x, float y, Typeface face, unsigned int size, bool drawBox = false) override;
     
     virtual void strokeTextCentered(const std::string& text, float centerX, float centerY, Typeface face = Proportional, unsigned int size = 12, bool drawBox = false) override;
@@ -59,6 +65,29 @@ private:
     
     FontMgr fontManager;
     FontCache fontCache;
+
+    GLUtesselator* tesselator;
+
+
+    /// Typedef for a GLUT callback: No parameters, returns void
+    /// The acual callbacks have different function signatures
+    typedef void (*glu_callback) (void);
+
+    /// Converts the provided function object into
+    /// a GLUT callback
+    /// F is the type of function object provided. This cannot be an std::function.
+    /// It is usually a lambda type, obtained indirectly using decltype().
+    /// As are the arguments that the function takes
+    template < typename F, typename... As >
+    glu_callback makeGluCallback(F function) {
+        // Convert the function to a function pointer of the same signature
+        typedef void (function_type) (As...);
+        typedef function_type* function_pointer;
+        function_pointer pointer = static_cast< function_pointer > (function);
+        assert(pointer);
+        // Unsafe cast into the specified callback type
+        return reinterpret_cast< glu_callback >(pointer);
+    }
 };
 
 
