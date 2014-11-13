@@ -48,11 +48,11 @@ public:
     GLGraphicsContext(float top, float bottom, float left, float right);
     
     
-    void fillRect(float top, float left, float bottom, float right);
-    void strokeRect(float top, float left, float bottom, float right, float width = 1);
+    void fillRect(float top, float left, float bottom, float right) override;
+    void strokeRect(float top, float left, float bottom, float right, float width = 1) override;
     
-    virtual void fillPolygon(double* points, int pointCount);
-
+    virtual void fillPolygon(double* points, int pointCount) override;
+    virtual void strokePolygon(double* points, int pointCount, float width = 0) override;
 
     virtual void strokeText(const std::string& text, float x, float y, Typeface face, unsigned int size, bool drawBox = false) override;
     

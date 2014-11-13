@@ -94,6 +94,34 @@ void GLGraphicsContext::fillPolygon(double* points, int pointCount) {
     if(!tesselator) {
         tesselator = gluNewTess();
     }
+    setGlColor(fillColor());
+    // Specify fill
+    gluTessProperty(tesselator, GLU_TESS_BOUNDARY_ONLY, GL_FALSE);
+    // Set up callbacks
+    gluTessCallback(tesselator, GLU_TESS_BEGIN, makeGluCallback< decltype(&glBegin), GLenum >( &glBegin ));
+    gluTessCallback(tesselator, GLU_TESS_END, makeGluCallback(&glEnd));
+    gluTessCallback(tesselator, GLU_TESS_VERTEX, makeGluCallback<decltype(&glVertex3dv), const double* >(&glVertex3dv));
+
+    gluTessBeginPolygon(tesselator, nullptr);
+    gluTessBeginContour(tesselator);
+
+    // Specify vertices
+    for(int i = 0; i < pointCount; i++) {
+        gluTessVertex(tesselator, points + i * 3, points + i * 3);
+    }
+
+    gluTessEndContour(tesselator);
+    gluTessEndPolygon(tesselator);
+}
+void GLGraphicsContext::strokePolygon(double* points, int pointCount, float width) {
+    // Initialize tesselator
+    if(!tesselator) {
+        tesselator = gluNewTess();
+    }
+    setGlColor(strokeColor());
+    glLineWidth(width);
+    // Specify line
+    gluTessProperty(tesselator, GLU_TESS_BOUNDARY_ONLY, GL_TRUE);
 
     // Set up callbacks
     gluTessCallback(tesselator, GLU_TESS_BEGIN, makeGluCallback< decltype(&glBegin), GLenum >( &glBegin ));
@@ -110,7 +138,6 @@ void GLGraphicsContext::fillPolygon(double* points, int pointCount) {
 
     gluTessEndContour(tesselator);
     gluTessEndPolygon(tesselator);
-
 }
 
 void GLGraphicsContext::strokeText(const std::string& text, float x, float y, Typeface face, unsigned int size, bool drawBox)

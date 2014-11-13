@@ -113,6 +113,23 @@ public:
     inline void fillPolygon(std::vector<double> points) {
         fillPolygon(&points.front(), points.size());
     }
+    /**
+     * Strokes a polygon defined by the given points.
+     *
+     * The polygon does not need to be convex, but it must not be self-intersecting.
+     *
+     * @param points The points that define the polygon.
+     * This should be an array of length 3 * pointCount.
+     * Each group of 3 values represents a point. The three values
+     * are in X, Y, Z order.
+     *
+     * @param pointCount The number of points to draw
+     * @param width The width of the line
+     */
+    virtual void strokePolygon(double* points, int pointCount, float width = 0) = 0;
+    inline void strokePolygon(std::vector<double> points, float width = 0) {
+        strokePolygon(&points.front(), points.size(), width);
+    }
     
     // Text section
     
