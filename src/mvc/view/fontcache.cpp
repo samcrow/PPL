@@ -25,6 +25,10 @@
 // of the authors and should not be interpreted as representing official policies,
 // either expressed or implied, of the FreeBSD Project.
 
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+#include <sstream>
 #include "fontcache.h"
 #include "../../pluginpath.h"
 
@@ -36,6 +40,10 @@ FontCache::FontCache(FontMgr& manager, const std::string& monospacePath, const s
     monospacePath(monospacePath),
     proportionalPath(proportionalPath)
 {
+    // Check that the typeface files are actually there. If they do not exist,
+    // libfreetype will cause a crash and provide little information on what is wrong.
+    checkFileExists(monospacePath);
+    checkFileExists(proportionalPath);
 }
 
 FontHandle FontCache::get(GraphicsContext::Typeface font, unsigned int size) {
@@ -91,6 +99,16 @@ FontCache::~FontCache() {
 
 FontMgr& FontCache::fontManager() {
     return fontManager_;
+}
+
+void FontCache::checkFileExists(const std::string& path) {
+    std::FILE* file = std::fopen(path.c_str(), "r");
+    if(!file) {
+        std::stringstream stream;
+        stream << "The font file " << path << " could not be opened: " << std::strerror(errno);
+        throw std::runtime_error(stream.str());
+    }
+    std::fclose(file);
 }
 
 }

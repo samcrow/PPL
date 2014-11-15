@@ -66,6 +66,8 @@ private:
     std::unordered_map<unsigned int, FontHandle> monospaceCache;
     
     FontHandle load(GraphicsContext::Typeface font, unsigned int size);
+
+    void checkFileExists(const std::string& path);
 };
 
 }

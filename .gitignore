@@ -2,5 +2,6 @@
 Makefile
 objects/
 ppl.pro.user
+.qmake.stash
 
 *.DS_Store
