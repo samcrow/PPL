@@ -27,6 +27,8 @@
 
 #include "processor.h"
 #include "XPLMProcessing.h"
+#include <stdexcept>
+#include <iostream>
 
 using namespace PPLNAMESPACE;
 
@@ -46,6 +48,20 @@ float Processor::flightloopcallback(float inElapsedSinceLastCall,
                                     void *inRefcon)
 {
     Processor* proc = static_cast<Processor*>(inRefcon);
-    return proc->callback(inElapsedSinceLastCall, inElapsedTimeSinceLastFlightLoop, inCounter);
+    // Set a default return value of 1
+    // If an exception is thrown, this will be returned
+    // and the callback will not be called again for 1 second
+    float ret;
+    try {
+        ret = proc->callback(inElapsedSinceLastCall, inElapsedTimeSinceLastFlightLoop, inCounter);
+    }
+    catch (std::exception& ex) {
+        std::cerr << "Unhandled exception in processor callback: " << ex.what() << std::endl;
+    }
+    catch (...) {
+        std::cerr << "Unhandled exception in processor callback" << std::endl;
+    }
+
+    return ret;
 }
 
