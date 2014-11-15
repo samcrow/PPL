@@ -78,6 +78,8 @@ public:
     
     bool hasType();
     Type type();
+
+    virtual Navaid::Type navaidType() const override;
     
 protected:
     friend class Navaid;

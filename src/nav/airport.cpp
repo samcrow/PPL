@@ -57,6 +57,10 @@ void Airport::startFindingAllAirports() {
     catch (std::exception& ex) { std::cerr << "Failed to start finding all airports: " << ex.what() << std::endl; }
 }
 
+Navaid::Type Airport::navaidType() const {
+    return Navaid::Type::Airport;
+}
+
 bool Airport::hasRunways() {
     if(!runways_) {
         // Check

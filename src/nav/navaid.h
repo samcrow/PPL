@@ -112,30 +112,13 @@ protected:
 };
 
 // Navaid type operators
-Navaid::Type operator | (Navaid::Type left, Navaid::Type right) {
-    return static_cast<Navaid::Type>( static_cast<Navaid::type_underlying>(left) | static_cast<Navaid::type_underlying>(right) );
-}
-Navaid::Type operator & (Navaid::Type left, Navaid::Type right) {
-    return static_cast<Navaid::Type>( static_cast<Navaid::type_underlying>(left) & static_cast<Navaid::type_underlying>(right) );
-}
-Navaid::Type operator ^ (Navaid::Type left, Navaid::Type right) {
-    return static_cast<Navaid::Type>( static_cast<Navaid::type_underlying>(left) ^ static_cast<Navaid::type_underlying>(right) );
-}
-Navaid::Type operator ~ (Navaid::Type original) {
-    return static_cast<Navaid::Type>( ~ static_cast<Navaid::type_underlying>( original ));
-}
-Navaid::Type& operator |= (Navaid::Type& left, Navaid::Type right) {
-    left = left | right;
-    return left;
-}
-Navaid::Type& operator &= (Navaid::Type& left, Navaid::Type right) {
-    left = left & right;
-    return left;
-}
-Navaid::Type& operator ^= (Navaid::Type& left, Navaid::Type right) {
-    left = left ^ right;
-    return left;
-}
+Navaid::Type operator | (Navaid::Type left, Navaid::Type right);
+Navaid::Type operator & (Navaid::Type left, Navaid::Type right);
+Navaid::Type operator ^ (Navaid::Type left, Navaid::Type right);
+Navaid::Type operator ~ (Navaid::Type original);
+Navaid::Type& operator |= (Navaid::Type& left, Navaid::Type right);
+Navaid::Type& operator &= (Navaid::Type& left, Navaid::Type right);
+Navaid::Type& operator ^= (Navaid::Type& left, Navaid::Type right);
 
 }
 
