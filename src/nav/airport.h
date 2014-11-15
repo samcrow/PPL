@@ -80,7 +80,8 @@ public:
     Type type();
     
 protected:
-
+    friend class Navaid;
+    Airport(XPLMNavRef ref);
     
 private:
     
@@ -94,6 +95,7 @@ private:
     static XPLMNavRef findNavRef(const std::string& code);
     
     void copyDataFromCache();
+    void startFindingAllAirports();
     
     // Data cache operations
     static std::unique_ptr<detail::AptDatCache> cache_;

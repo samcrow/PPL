@@ -38,6 +38,16 @@ std::unique_ptr<detail::AptDatCache> Airport::cache_;
 Airport::Airport(const std::string& code) :
     Navaid(findNavRef(code))
 {
+    startFindingAllAirports();
+}
+
+Airport::Airport(XPLMNavRef ref) :
+    Navaid(ref)
+{
+    startFindingAllAirports();
+}
+
+void Airport::startFindingAllAirports() {
     // Start the apt.dat reading, if not already started
     try {
         if(!cache().hasAirportCached(id_)) {

@@ -32,6 +32,15 @@ namespace PPLNAMESPACE {
 DME::DME(const std::string &id) :
     Navaid(findNavRef(id))
 {
+    getFrequency();
+}
+DME::DME(XPLMNavRef ref) :
+    Navaid(ref)
+{
+    getFrequency();
+}
+
+void DME::getFrequency() {
     // Get frequency
     int rawFrequency;
     XPLMGetNavAidInfo(ref_, nullptr, nullptr, nullptr, nullptr, &rawFrequency, nullptr, nullptr, nullptr, nullptr);

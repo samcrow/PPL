@@ -100,6 +100,51 @@ Navaid::Type Navaid::navaidType() const {
     return Type::Unknown;
 }
 
+Navaid* Navaid::build(XPLMNavRef ref) {
+    // Get type
+    XPLMNavType type;
+    XPLMGetNavAidInfo(ref, &type, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+    switch(type) {
+    case xplm_Nav_Airport:
+        return new Airport(ref);
+        break;
+    case xplm_Nav_NDB:
+        return new NDB(ref);
+        break;
+    case xplm_Nav_VOR:
+        return new VOR(ref);
+        break;
+    case xplm_Nav_ILS:
+        return new ILS(ref);
+        break;
+    case xplm_Nav_Localizer:
+        return new Localizer(ref);
+        break;
+    case xplm_Nav_GlideSlope:
+        return new Glideslope(ref);
+        break;
+    case xplm_Nav_OuterMarker:
+        return new OuterMarker(ref);
+        break;
+    case xplm_Nav_MiddleMarker:
+        return new MiddleMarker(ref);
+        break;
+    case xplm_Nav_InnerMarker:
+        return new InnerMarker(ref);
+        break;
+    case xplm_Nav_Fix:
+        return new Fix(ref);
+        break;
+    case xplm_Nav_DME:
+        return new DME(ref);
+        break;
+
+    case xplm_Nav_Unknown: // Intentional fallthrough
+    default:
+        throw std::runtime_error("Unknown navaid type");
+    }
+}
+
 // Specialize downcast for every subclass
 
 template<>

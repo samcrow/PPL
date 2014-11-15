@@ -32,6 +32,16 @@ namespace PPLNAMESPACE {
 NDB::NDB(const std::string &id) :
     Navaid(findNavRef(id))
 {
+    getFrequency();
+}
+
+NDB::NDB(XPLMNavRef ref) :
+    Navaid(ref)
+{
+    getFrequency();
+}
+
+void NDB::getFrequency() {
     // Get frequency
     int rawFrequency;
     XPLMGetNavAidInfo(ref_, nullptr, nullptr, nullptr, nullptr, &rawFrequency, nullptr, nullptr, nullptr, nullptr);

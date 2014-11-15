@@ -33,6 +33,10 @@ MiddleMarker::MiddleMarker(const std::string &id) :
     Navaid(findNavRef(id))
 {
 }
+MiddleMarker::MiddleMarker(XPLMNavRef ref) :
+    Navaid(ref)
+{
+}
 
 Navaid::Type MiddleMarker::navaidType() const {
     return Type::MiddleMarker;

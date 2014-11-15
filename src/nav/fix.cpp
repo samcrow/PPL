@@ -33,6 +33,10 @@ Fix::Fix(const std::string &id) :
     Navaid(findNavRef(id))
 {
 }
+Fix::Fix(XPLMNavRef ref) :
+    Navaid(ref)
+{
+}
 
 Navaid::Type Fix::navaidType() const {
     return Type::Fix;

@@ -32,6 +32,16 @@ namespace PPLNAMESPACE {
 VOR::VOR(const std::string &id) :
     Navaid(findNavRef(id))
 {
+    getFrequency();
+}
+
+VOR::VOR(XPLMNavRef ref) :
+    Navaid(ref)
+{
+    getFrequency();
+}
+
+void VOR::getFrequency() {
     // Get frequency
     int rawFrequency;
     XPLMGetNavAidInfo(ref_, nullptr, nullptr, nullptr, nullptr, &rawFrequency, nullptr, nullptr, nullptr, nullptr);

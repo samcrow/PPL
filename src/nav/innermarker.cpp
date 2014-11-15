@@ -33,6 +33,10 @@ InnerMarker::InnerMarker(const std::string &id) :
     Navaid(findNavRef(id))
 {
 }
+InnerMarker::InnerMarker(XPLMNavRef ref) :
+    Navaid(ref)
+{
+}
 
 Navaid::Type InnerMarker::navaidType() const {
     return Type::InnerMarker;

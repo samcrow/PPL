@@ -32,6 +32,15 @@ namespace PPLNAMESPACE {
 Glideslope::Glideslope(const std::string &id) :
     Navaid(findNavRef(id))
 {
+    getFrequency();
+}
+Glideslope::Glideslope(XPLMNavRef ref) :
+    Navaid(ref)
+{
+    getFrequency();
+}
+
+void Glideslope::getFrequency() {
     // Get frequency
     int rawFrequency;
     XPLMGetNavAidInfo(ref_, nullptr, nullptr, nullptr, nullptr, &rawFrequency, &heading_, nullptr, nullptr, nullptr);

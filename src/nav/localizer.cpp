@@ -32,6 +32,16 @@ namespace PPLNAMESPACE {
 Localizer::Localizer(const std::string &id) :
     Navaid(findNavRef(id))
 {
+    getFrequency();
+}
+
+Localizer::Localizer(XPLMNavRef ref) :
+    Navaid(ref)
+{
+    getFrequency();
+}
+
+void Localizer::getFrequency() {
     // Get frequency
     int rawFrequency;
     XPLMGetNavAidInfo(ref_, nullptr, nullptr, nullptr, nullptr, &rawFrequency, &heading_, nullptr, nullptr, nullptr);

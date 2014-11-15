@@ -137,7 +137,8 @@ HEADERS += \
     src/nav/middlemarker.h \
     src/nav/innermarker.h \
     src/nav/fix.h \
-    src/nav/dme.h
+    src/nav/dme.h \
+    src/nav/navaidfinder.h
 
 SOURCES += \
     src/pluginpath.cpp \
@@ -195,7 +196,8 @@ SOURCES += \
     src/nav/middlemarker.cpp \
     src/nav/innermarker.cpp \
     src/nav/fix.cpp \
-    src/nav/dme.cpp
+    src/nav/dme.cpp \
+    src/nav/navaidfinder.cpp
 
 
 withsound {

@@ -57,6 +57,11 @@ void LatLon::setLongitude(double newLongitude) {
     longitude_ = newLongitude;
 }
 
+/**
+ *
+ * @param other
+ * @return The distance, in meters, between this point and another
+ */
 double LatLon::distanceTo(const LatLon& other) const {
     return distance(*this, other);
 }
@@ -69,6 +74,12 @@ double LatLon::bearingTo(const LatLon& other) const {
 // I would like to thank the author of the web page http://www.movable-type.co.uk/scripts/latlong.html
 // for describing these techniques:
 
+/**
+ *
+ * @param p1
+ * @param p2
+ * @return The distance, in meters, between the two points
+ */
 double LatLon::distance(const LatLon& p1, const LatLon& p2) {
     // Spherical law of cosines
     // The Haversine version might be better for small distances

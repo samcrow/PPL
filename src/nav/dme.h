@@ -42,10 +42,16 @@ public:
 
     virtual Type navaidType() const override;
 
+protected:
+    friend class Navaid;
+    DME(XPLMNavRef ref);
+
 private:
     static XPLMNavRef findNavRef(const std::string& id);
 
     Frequency frequency_;
+
+    void getFrequency();
 
 };
 

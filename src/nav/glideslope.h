@@ -43,11 +43,17 @@ public:
 
     virtual Type navaidType() const override;
 
+protected:
+    friend class Navaid;
+    Glideslope(XPLMNavRef ref);
+
 private:
     static XPLMNavRef findNavRef(const std::string& id);
 
     Frequency frequency_;
     float heading_;
+
+    void getFrequency();
 
 };
 

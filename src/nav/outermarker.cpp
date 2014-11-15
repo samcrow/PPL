@@ -34,6 +34,11 @@ OuterMarker::OuterMarker(const std::string &id) :
 {
 }
 
+OuterMarker::OuterMarker(XPLMNavRef ref) :
+    Navaid(ref)
+{
+}
+
 Navaid::Type OuterMarker::navaidType() const {
     return Type::OuterMarker;
 }

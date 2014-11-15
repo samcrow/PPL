@@ -38,6 +38,9 @@ public:
     OuterMarker(const std::string& id);
 
     virtual Type navaidType() const override;
+protected:
+    friend class Navaid;
+    OuterMarker(XPLMNavRef ref);
 
 private:
     static XPLMNavRef findNavRef(const std::string& id);

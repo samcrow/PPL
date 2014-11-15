@@ -32,6 +32,16 @@ namespace PPLNAMESPACE {
 ILS::ILS(const std::string &id) :
     Navaid(findNavRef(id))
 {
+    getFrequency();
+}
+
+ILS::ILS(XPLMNavRef ref) :
+    Navaid(ref)
+{
+    getFrequency();
+}
+
+void ILS::getFrequency() {
     // Get frequency
     int rawFrequency;
     XPLMGetNavAidInfo(ref_, nullptr, nullptr, nullptr, nullptr, &rawFrequency, &heading_, nullptr, nullptr, nullptr);

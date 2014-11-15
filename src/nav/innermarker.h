@@ -39,6 +39,10 @@ public:
 
     virtual Type navaidType() const override;
 
+protected:
+    friend class Navaid;
+    InnerMarker(XPLMNavRef ref);
+
 private:
     static XPLMNavRef findNavRef(const std::string& id);
 };
