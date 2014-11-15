@@ -41,11 +41,11 @@ template < class ControllerType >
 class OverlayGaugeView : public AdvancedOverlayGauge, public View < ControllerType >
 {
 public:
-    OverlayGaugeView(int width, int height, ControllerType& controller) :
+    OverlayGaugeView(FontCache& fontCache, int width, int height, ControllerType& controller) :
         AdvancedOverlayGauge(300, 300, width, height, 300, 300, width, height, 0, 0, 0, true, true, true),
         View<ControllerType>(controller),
         
-        context(height, 0, 0, width)
+        context(fontCache, height, 0, 0, width)
     {}
     
     virtual void advancedDraw(int, int, int, int) override

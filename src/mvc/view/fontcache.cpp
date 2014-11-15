@@ -31,8 +31,10 @@
 
 namespace PPLNAMESPACE {
 
-FontCache::FontCache(FontMgr &manager) :
-    fontManager(manager)
+FontCache::FontCache(FontMgr& manager, const std::string& monospacePath, const std::string& proportionalPath) :
+    fontManager_(manager),
+    monospacePath(monospacePath),
+    proportionalPath(proportionalPath)
 {
 }
 
@@ -66,25 +68,29 @@ FontHandle FontCache::get(GraphicsContext::Typeface font, unsigned int size) {
 FontHandle FontCache::load(GraphicsContext::Typeface font, unsigned int size) {
     std::string path;
     if(font == GraphicsContext::Monospace) {
-        path = PluginPath::prependPluginResourcesPath("fonts/DejaVuSansMono-Bold.ttf");
+        path = monospacePath;
     }
     else if(font == GraphicsContext::Proportional) {
-        path = PluginPath::prependPluginResourcesPath("fonts/DejaVuSans.ttf");
+        path = proportionalPath;
     } else {
         throw std::logic_error("FontCache: Unrecognized font");
     }
     
-    return fontManager.loadFont(path.c_str(), 0, 0, size, true); // Yes, require exact size
+    return fontManager_.loadFont(path.c_str(), 0, 0, size, true); // Yes, require exact size
 }
 
 FontCache::~FontCache() {
     // Unload all fonts
     for(auto it = proportionalCache.begin(); it != proportionalCache.end(); it++) {
-        fontManager.unloadFont(it->second);
+        fontManager_.unloadFont(it->second);
     }
     for(auto it = monospaceCache.begin(); it != monospaceCache.end(); it++) {
-        fontManager.unloadFont(it->second);
+        fontManager_.unloadFont(it->second);
     }
+}
+
+FontMgr& FontCache::fontManager() {
+    return fontManager_;
 }
 
 }

@@ -56,8 +56,9 @@ public:
     static std::string prependXPlanePath(const std::string&);
 
     /**
-      * prepend the absolute path to the directory of the currently running plugin
-      * to the path
+      * Prepend the absolute path to the directory of the currently running plugin
+      * to the path. Assumes that the plugin is running as a non-aircraft-specific
+      * plugin in the resources/plugins directory.
       * @param path to which absolute path should be prepended
       * @return the absolute path
       * @exception PathSetupError is thrown if path conversion fails
@@ -65,13 +66,36 @@ public:
     static std::string prependPluginPath(const std::string&);
 
     /**
+      * Prepend the absolute path to the directory of the currently running plugin
+      * to the path. Assumes that the plugin is running as an aircraft-
+      * specific plugin within the aircraft directory.
+      * @param path to which absolute path should be prepended
+      * @return the absolute path
+      * @exception PathSetupError is thrown if path conversion fails
+      */
+    static std::string prependAircraftPluginPath(const std::string&);
+
+    /**
       * prepend the absolute path to the Resources subdirectory of the
-      * directory of the currently running plugin to the path
+      * directory of the currently running plugin to the path.
+      * Assumes that the plugin is running as a non-aircraft-specific
+      * plugin in the resources/plugins directory.
       * @param path to which absolute path should be prepended
       * @return the absolute path
       * @exception PathSetupError is thrown if path conversion fails
       */
     static std::string prependPluginResourcesPath(const std::string&);
+
+    /**
+      * Prepend the absolute path to the Resources subdirectory of the
+      * directory of the currently running plugin to the path.
+      * Assumes that the plugin is running as an aircraft-
+      * specific plugin within the aircraft directory.
+      * @param path to which absolute path should be prepended
+      * @return the absolute path
+      * @exception PathSetupError is thrown if path conversion fails
+      */
+    static std::string prependAircraftPluginResourcesPath(const std::string&);
 
     /**
       * prepend the absolute path to the directory of the currently loaded

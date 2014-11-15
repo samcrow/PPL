@@ -45,7 +45,7 @@ namespace PPLNAMESPACE {
 class GLGraphicsContext : public BasicGraphicsContext
 {
 public:
-    GLGraphicsContext(float top, float bottom, float left, float right);
+    GLGraphicsContext(FontCache& fontCache, float top, float bottom, float left, float right);
     
     
     void fillRect(float top, float left, float bottom, float right) override;
@@ -62,9 +62,9 @@ public:
 private:
     
     static void setGlColor(const Color& color);
-    
-    FontMgr fontManager;
-    FontCache fontCache;
+
+    FontCache& fontCache;
+    FontMgr& fontManager;
 
     GLUtesselator* tesselator;
 

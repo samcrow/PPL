@@ -50,9 +50,10 @@
 
 namespace PPLNAMESPACE {
 
-GLGraphicsContext::GLGraphicsContext(float top, float bottom, float left, float right) :
+GLGraphicsContext::GLGraphicsContext(FontCache& fontCache, float top, float bottom, float left, float right) :
     BasicGraphicsContext(top, bottom, left, right),
-    fontCache(fontManager),
+    fontCache(fontCache),
+    fontManager(this->fontCache.fontManager()),
     tesselator(nullptr)
 {
 }

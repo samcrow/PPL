@@ -77,6 +77,17 @@ std::string PluginPath::prependPluginPath(const std::string& file)
 #endif
 }
 
+std::string PluginPath::prependAircraftPluginPath(const std::string& file)
+{
+#ifdef BUILD_FOR_STANDALONE
+    return file;
+#else
+    std::string path = "/plugins/";
+    path.append(plugin_directory).append("/").append(file);
+    return prependPlanePath(path);
+#endif
+}
+
 std::string PluginPath::prependPluginResourcesPath(const std::string& file)
 {
     std::string res_path("Resources/");
@@ -85,6 +96,17 @@ std::string PluginPath::prependPluginResourcesPath(const std::string& file)
     return res_path;
 #else
     return prependPluginPath(res_path);
+#endif
+}
+
+std::string PluginPath::prependAircraftPluginResourcesPath(const std::string& file)
+{
+    std::string res_path("Resources/");
+    res_path.append(file);
+#ifdef BUILD_FOR_STANDALONE
+    return res_path;
+#else
+    return prependAircraftPluginPath(res_path);
 #endif
 }
 

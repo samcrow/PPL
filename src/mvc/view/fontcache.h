@@ -37,15 +37,30 @@ namespace PPLNAMESPACE {
 class FontCache
 {
 public:
-    FontCache(FontMgr& manager);
+    /**
+     * Constructor
+     * @param manager The font manager to use to load fonts
+     * @param monospacePath The path to a .ttf file for a monospace typeface
+     * @param proportionalPath The path to a .ttf file for a proportional typeface
+     */
+    FontCache(FontMgr& manager, const std::string& monospacePath, const std::string& proportionalPath);
     
     FontHandle get(GraphicsContext::Typeface font, unsigned int size);
     
+    /**
+     *
+     * @return A reference to the font manager that this cache uses
+     */
+    FontMgr& fontManager();
+
     ~FontCache();
     
 private:
     
-    FontMgr& fontManager;
+    FontMgr& fontManager_;
+
+    std::string monospacePath;
+    std::string proportionalPath;
     
     std::unordered_map<unsigned int, FontHandle> proportionalCache;
     std::unordered_map<unsigned int, FontHandle> monospaceCache;
