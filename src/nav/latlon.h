@@ -32,6 +32,8 @@
 
 namespace PPLNAMESPACE {
 
+class LocalPosition;
+
 /**
  * @brief The LatLon class stores a latitude and longitude and provides related operations.
  * 
@@ -41,6 +43,7 @@ class LatLon
 public:
     LatLon();
     LatLon(double latitude, double longitude);
+    LatLon(const LocalPosition& local);
     
     double latitude() const;
     double longitude() const;

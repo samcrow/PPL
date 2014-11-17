@@ -26,7 +26,9 @@
 // either expressed or implied, of the FreeBSD Project.
 
 #include "latlon.h"
+#include "localposition.h"
 #include <cmath>
+#include <XPLMGraphics.h>
 
 namespace PPLNAMESPACE {
 
@@ -38,7 +40,11 @@ LatLon::LatLon(double latitude, double longitude) :
     latitude_(latitude),
     longitude_(longitude)
 {
-    
+}
+
+LatLon::LatLon(const LocalPosition& local) {
+    double altitude;
+    XPLMLocalToWorld(local.x(), local.y(), local.z(), &latitude_, &longitude_, &altitude);
 }
 
 double LatLon::latitude() const {
