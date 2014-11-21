@@ -56,7 +56,7 @@ public:
     void handleKeyPress(char, XPLMKeyFlags, char) {
         
     }
-    
+
 private:
     GLGraphicsContext context;
     
@@ -69,6 +69,13 @@ private:
             context.strokeRect(region->top(), region->left(), region->bottom(), region->right());
         }
     }
+
+protected:
+    /// @return A graphics context that subclasses can use to draw inside a draw callback
+    GraphicsContext& graphicsContext() {
+        return context;
+    }
+
 };
 
 }
