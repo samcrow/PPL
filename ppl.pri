@@ -10,6 +10,9 @@ INCLUDEPATH += PPL/include
 withfreetype {
     INCLUDEPATH += PPL/include/freetype2
     LIBS += -L/opt/local/lib -lfreetype-static
+
+    # It may be the case that freetype requires libpng
+    CONFIG += withpng
 }
 withpng {
     LIBS += -L/opt/local/lib -lpng
@@ -17,3 +20,4 @@ withpng {
 
 # Add the library. Assumes that PPL was compiled in the PPL-build directory
 LIBS += -L$$PWD/../PPL-build/lib$$PRIVATENAMESPACE -lppl
+PRE_TARGETDEPS += $$PWD/../PPL-build/lib$$PRIVATENAMESPACE/libppl.a
