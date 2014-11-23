@@ -111,7 +111,7 @@ public:
      */
     virtual void fillPolygon(double* points, int pointCount) = 0;
     inline void fillPolygon(std::vector<double> points) {
-        fillPolygon(&points.front(), points.size());
+        fillPolygon(&points.front(), points.size() / 3);
     }
     /**
      * Strokes a polygon defined by the given points.
@@ -128,7 +128,7 @@ public:
      */
     virtual void strokePolygon(double* points, int pointCount, float width = 0) = 0;
     inline void strokePolygon(std::vector<double> points, float width = 0) {
-        strokePolygon(&points.front(), points.size(), width);
+        strokePolygon(&points.front(), points.size() / 3, width);
     }
     
     // Text section
