@@ -116,9 +116,6 @@ private:
 
     static std::string plugin_directory;
 
-#if APL && __MACH__
-    static int ConvertPath(const char * inPath, char * outPath, int outPathMaxLen);
-#endif
 };
 
 }
