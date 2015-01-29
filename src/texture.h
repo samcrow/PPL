@@ -28,6 +28,30 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+
+#if IBM
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <gl\gl.h>
+#include <gl\glu.h>
+// Fix for old OpenGL version on Windows
+#ifndef GL_CLAMP_TO_EDGE
+#define GL_CLAMP_TO_EDGE 0x812F
+#endif
+
+#elif LIN
+#include <GL/gl.h>
+#include <GL/glu.h>
+#else
+#if __GNUC__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
+#include <gl.h>
+#include <glu.h>
+#endif
+#endif
+
 #include <string>
 #include <vector>
 #include <stdint.h>
@@ -48,8 +72,16 @@ public:
     void drawTex(float left, float top, float right, float bottom, float alpha);
     void drawColoredTex(float left, float top, float right, float bottom, float color[]); //color[4], including alpha
 
-private:
+protected:
+    /**
+     * Creates a texture using the provided image data.
+     * An OpenGL texture ID is assigned automatically.
+     * @param imageData
+     */
+    Texture(const IMAGEDATA& imageData, GLuint type);
 
+private:
+    void setUpImage(GLuint type);
     void swapRedBlue();
     IMAGEDATA m_imagedata;
     int m_id;

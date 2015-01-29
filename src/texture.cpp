@@ -34,29 +34,6 @@
 #include "XPLMGraphics.h"
 #endif
 
-#if IBM
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <gl\gl.h>
-#include <gl\glu.h>
-// Fix for old OpenGL version on Windows
-#ifndef GL_CLAMP_TO_EDGE
-#define GL_CLAMP_TO_EDGE 0x812F
-#endif
-
-#elif LIN
-#include <GL/gl.h>
-#include <GL/glu.h>
-#else
-#if __GNUC__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <gl.h>
-#include <glu.h>
-#endif
-#endif
-
 #include "imageio/targaio.h"
 #include "imageio/bitmapio.h"
 #ifdef PPL_ENABLE_PNG
@@ -72,10 +49,7 @@ Texture::Texture(const std::string& file_name)
     if (file_name.rfind(".bmp") != std::string::npos)
     {
         BitmapIO::read(m_imagedata, file_name);
-        
         swapRedBlue();
-
-
 #ifdef BUILD_FOR_STANDALONE
         glGenTextures(1, (GLuint*)&m_id);
         glBindTexture(GL_TEXTURE_2D, m_id);
@@ -84,56 +58,47 @@ Texture::Texture(const std::string& file_name)
         XPLMGenerateTextureNumbers(&m_id, 1);
         XPLMBindTexture2d(m_id, 0);
 #endif
-
-
         gluBuild2DMipmaps(GL_TEXTURE_2D, 3, m_imagedata.Width, m_imagedata.Height, GL_RGB, GL_UNSIGNED_BYTE, &m_imagedata.pData[0]);
-
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-        
-        
     }
 #ifdef PPL_ENABLE_PNG
     // PNG
     else if (file_name.rfind(".png") != std::string::npos) {
         GLuint type;
         PngIO::read(m_imagedata, type, file_name);
-        
-#ifdef BUILD_FOR_STANDALONE
-        glGenTextures(1, (GLuint*)&m_id);
-        glBindTexture(GL_TEXTURE_2D, m_id);
-#else
-        /// Do the opengl stuff using XPLM functions for a friendly Xplane existence.
-        XPLMGenerateTextureNumbers(&m_id, 1);
-        XPLMBindTexture2d(m_id, 0);
-#endif
-        glTexImage2D(GL_TEXTURE_2D, 0, type, m_imagedata.Width, m_imagedata.Height, 0, type, GL_UNSIGNED_BYTE, &m_imagedata.pData[0]);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-        
+	setUpImage(type);
     }
 #endif
     else if (file_name.rfind(".tga") != std::string::npos)
     {
-        GLuint type;
-        
+	GLuint type;
         TargaIO::read(m_imagedata, type, file_name);
-        
-#ifdef BUILD_FOR_STANDALONE
-        glGenTextures(1, (GLuint*)&m_id);
-        glBindTexture(GL_TEXTURE_2D, m_id);
-#else
-        /// Do the opengl stuff using XPLM functions for a friendly Xplane existence.
-        XPLMGenerateTextureNumbers(&m_id, 1);
-        XPLMBindTexture2d(m_id, 0);
-#endif
-        glTexImage2D(GL_TEXTURE_2D, 0, type, m_imagedata.Width, m_imagedata.Height, 0, type, GL_UNSIGNED_BYTE, &m_imagedata.pData[0]);
-
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	setUpImage(type);
     } else {
         throw std::runtime_error("The texture file is neither a BMP, a PNG, nor a TGA. Other file formats are not supported.");
     }
+}
+
+Texture::Texture(const IMAGEDATA& imageData, GLuint type) :
+    m_imagedata(imageData)
+{
+    setUpImage(type);
+}
+
+void Texture::setUpImage(GLuint type) {
+#ifdef BUILD_FOR_STANDALONE
+	glGenTextures(1, (GLuint*)&m_id);
+	glBindTexture(GL_TEXTURE_2D, m_id);
+#else
+	/// Do the opengl stuff using XPLM functions for a friendly Xplane existence.
+	XPLMGenerateTextureNumbers(&m_id, 1);
+	XPLMBindTexture2d(m_id, 0);
+#endif
+	glTexImage2D(GL_TEXTURE_2D, 0, type, m_imagedata.Width, m_imagedata.Height, 0, type, GL_UNSIGNED_BYTE, &m_imagedata.pData[0]);
+
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 }
 
 Texture::~Texture()
